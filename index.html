@@ -28,7 +28,7 @@
             --teal: #00edbe;
             --text-dark: #07094d;
             --text-black: #141414;
-            --bg: #f9f9ff;
+            --bg: #e8eaf5;
             --white: #ffffff;
             --border: #ddddeb;
             --progress-bg: #f3f4fb;
@@ -52,15 +52,6 @@
             max-width: 680px;
             width: 100%;
             box-shadow: 0 9px 15px 0 rgba(100, 116, 139, 0.12);
-        }
-
-        .oc-logo {
-            text-align: center;
-            margin-bottom: 24px;
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--purple);
-            letter-spacing: 0.5px;
         }
 
         h1 {
@@ -431,6 +422,49 @@
             color: var(--white);
         }
 
+        /* ── Fixed Bottom-Left Logo ── */
+        .oc-logo-fixed {
+            position: fixed;
+            bottom: 20px;
+            left: 24px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 8px 14px 8px 10px;
+            border-radius: 40px;
+            box-shadow: 0 2px 12px rgba(20,27,235,0.12);
+            text-decoration: none;
+        }
+
+        .oc-logo-fixed:hover {
+            box-shadow: 0 4px 18px rgba(20,27,235,0.2);
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+
+        .oc-logo-fixed-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #141beb;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: -0.2px;
+        }
+
+        @media (max-width: 640px) {
+            .oc-logo-fixed {
+                bottom: 14px;
+                left: 14px;
+                padding: 6px 12px 6px 8px;
+            }
+            .oc-logo-fixed-text {
+                font-size: 13px;
+            }
+        }
+
         /* ── Responsive ── */
         @media (max-width: 640px) {
             body {
@@ -497,7 +531,6 @@
 
         <!-- ── QUIZ ── -->
         <div id="quiz">
-            <div class="oc-logo">🎓 OPEN CAMPUS</div>
             <h1>🤖 AI Replaceability Test</h1>
             <p class="subtitle">Answer 5 quick questions to discover your replaceability score</p>
 
@@ -562,8 +595,7 @@
         <!-- ── RESULT ── -->
         <div id="result">
             <div class="result-inner">
-                <div class="oc-logo">🎓 OPEN CAMPUS</div>
-                <h1>Your AI Replaceability Score</h1>
+                    <h1>Your AI Replaceability Score</h1>
 
                 <!-- Shareable Score Card -->
                 <div class="score-card" id="scoreCard">
@@ -637,6 +669,19 @@
         </div><!-- /#result -->
 
     </div><!-- /.container -->
+
+    <!-- Fixed bottom-left Open Campus logo -->
+    <a href="https://opencampus.xyz" target="_blank" rel="noopener" class="oc-logo-fixed">
+        <!-- OC icon: teal circle + stacked books -->
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="16" fill="#00edbe"/>
+            <!-- stacked books -->
+            <rect x="8"  y="10" width="16" height="3.2" rx="1" fill="#07094d"/>
+            <rect x="8"  y="14.4" width="16" height="3.2" rx="1" fill="#07094d"/>
+            <rect x="8"  y="18.8" width="16" height="3.2" rx="1" fill="#07094d"/>
+        </svg>
+        <span class="oc-logo-fixed-text">Open Campus</span>
+    </a>
 
     <script>
         let currentQuestion = 1;
