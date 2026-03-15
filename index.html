@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Replaceability Test | Open Campus</title>
+    <meta name="description" content="Answer 5 quick questions to discover your AI replaceability score. Find out how safe your career is from automation.">
+    <meta property="og:title" content="AI Replaceability Test | Open Campus">
+    <meta property="og:description" content="How replaceable are you by AI? Take the 5-question test and find out your score.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Replaceability Test | Open Campus">
+    <meta name="twitter:description" content="How replaceable are you by AI? Take the 5-question test and find out your score.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --blue: #141beb;
+            --blue-dark: #1016bc;
+            --purple: #777bf3;
+            --teal: #00edbe;
+            --text-dark: #07094d;
+            --text-black: #141414;
+            --bg: #f9f9ff;
+            --white: #ffffff;
+            --border: #ddddeb;
+            --progress-bg: #f3f4fb;
+            --gradient: linear-gradient(90deg, #141beb 0%, #00edbe 100%);
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 50px 40px;
+            max-width: 680px;
+            width: 100%;
+            box-shadow: 0 9px 15px 0 rgba(100, 116, 139, 0.12);
+        }
+
+        .oc-logo {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--purple);
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--blue);
+            margin-bottom: 12px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-dark);
+            margin-bottom: 40px;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.7;
+        }
+
+        /* ── Progress Bar ── */
+        .progress-bar {
+            height: 6px;
+            background: var(--progress-bg);
+            border-radius: 10px;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            width: 20%;
+            transition: width 0.4s ease;
+            border-radius: 10px;
+        }
+
+        /* ── Questions ── */
+        .question {
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .question.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-number {
+            color: var(--purple);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .question-label {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-black);
+            margin-bottom: 16px;
+            display: block;
+            line-height: 1.5;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            background: var(--white);
+            color: var(--text-black);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(20, 27, 235, 0.1);
+        }
+
+        /* Custom select arrow */
+        .select-wrap {
+            position: relative;
+        }
+
+        .select-wrap::after {
+            content: '▾';
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--purple);
+            pointer-events: none;
+            font-size: 16px;
+        }
+
+        .btn {
+            background: var(--blue);
+            color: var(--white);
+            border: none;
+            padding: 18px 32px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+            width: 100%;
+            margin-top: 24px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn:hover {
+            background: var(--blue-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(20, 27, 235, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* ── Result Section ── */
+        #result {
+            display: none;
+        }
+
+        #result.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-inner {
+            text-align: center;
+        }
+
+        /* Score card - the shareable visual block */
+        .score-card {
+            background: linear-gradient(145deg, #0d12b3 0%, #141beb 45%, #2e32f0 75%, #00c9a0 100%);
+            border-radius: 20px;
+            padding: 40px 32px 36px;
+            margin: 28px 0 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 220px;
+            height: 220px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .score-card::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -40px;
+            width: 260px;
+            height: 260px;
+            background: rgba(0,237,190,0.08);
+            border-radius: 50%;
+        }
+
+        .score-card-brand {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.65);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-circle svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        #scoreText {
+            font-size: 52px;
+            font-weight: 800;
+            fill: #ffffff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .score-label-text {
+            font-size: 12px;
+            fill: rgba(255,255,255,0.7);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .result-message {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-role-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.9);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-description {
+            font-size: 15px;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.7;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        /* ── Share Section ── */
+        .share-section {
+            margin-bottom: 20px;
+        }
+
+        .share-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            padding: 13px 22px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        .share-btn.twitter  { background: #000000; color: #ffffff; }
+        .share-btn.linkedin { background: #0077b5; color: #ffffff; }
+        .share-btn.copy     { background: var(--teal); color: var(--text-black); }
+
+        /* ── CTA Block ── */
+        .cta-block {
+            background: linear-gradient(135deg, #f0f1ff 0%, #e8fdf9 100%);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 28px 28px 24px;
+            margin: 24px 0 20px;
+            text-align: center;
+        }
+
+        .cta-eyebrow {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .cta-headline {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.35;
+            margin-bottom: 8px;
+        }
+
+        .cta-subtext {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 15px;
+            font-weight: 700;
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+        }
+
+        .cta-btn:hover {
+            background: var(--blue-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(20, 27, 235, 0.3);
+        }
+
+        .cta-btn-arrow {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* ── Retry ── */
+        .retry-btn {
+            background: transparent;
+            border: 2px solid var(--blue);
+            color: var(--blue);
+            margin-top: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .retry-btn:hover {
+            background: var(--blue);
+            color: var(--white);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            body {
+                padding: 24px 16px;
+                align-items: flex-start;
+            }
+
+            .container {
+                padding: 36px 22px;
+                border-radius: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 15px;
+                margin-bottom: 32px;
+            }
+
+            .question-label {
+                font-size: 17px;
+            }
+
+            .score-card {
+                padding: 32px 22px 28px;
+            }
+
+            .score-circle {
+                width: 155px;
+                height: 155px;
+            }
+
+            #scoreText {
+                font-size: 44px;
+            }
+
+            .result-message {
+                font-size: 19px;
+            }
+
+            .result-description {
+                font-size: 14px;
+            }
+
+            .share-buttons {
+                flex-direction: column;
+            }
+
+            .share-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .cta-headline {
+                font-size: 17px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ── QUIZ ── -->
+        <div id="quiz">
+            <div class="oc-logo">🎓 OPEN CAMPUS</div>
+            <h1>🤖 AI Replaceability Test</h1>
+            <p class="subtitle">Answer 5 quick questions to discover your replaceability score</p>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <form id="quizForm" novalidate>
+
+                <!-- Q1 -->
+                <div class="question active" data-question="1">
+                    <div class="question-number">Question 1 of 5</div>
+                    <label class="question-label">What's your current role or expertise?</label>
+                    <input type="text" name="role" placeholder="e.g., Software Engineer, Teacher, Designer" autocomplete="off">
+                    <button type="button" class="btn" onclick="nextQuestion(1)">Next →</button>
+                </div>
+
+                <!-- Q2 -->
+                <div class="question" data-question="2">
+                    <div class="question-number">Question 2 of 5</div>
+                    <label class="question-label">What task feels totally human to you?</label>
+                    <input type="text" name="humanTask" placeholder="e.g., Creative problem solving, Empathy" autocomplete="off">
+                    <button type="button" class="btn" onclick="nextQuestion(2)">Next →</button>
+                </div>
+
+                <!-- Q3 -->
+                <div class="question" data-question="3">
+                    <div class="question-number">Question 3 of 5</div>
+                    <label class="question-label">What's your highest education level?</label>
+                    <div class="select-wrap">
+                        <select name="education">
+                            <option value="">Select...</option>
+                            <option value="high-school">High School</option>
+                            <option value="bachelors">Bachelor's Degree</option>
+                            <option value="masters">Master's Degree</option>
+                            <option value="phd">PhD</option>
+                            <option value="other">Other / Self-taught</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn" onclick="nextQuestion(3)">Next →</button>
+                </div>
+
+                <!-- Q4 -->
+                <div class="question" data-question="4">
+                    <div class="question-number">Question 4 of 5</div>
+                    <label class="question-label">What task would AI struggle with most in your work?</label>
+                    <input type="text" name="aiStruggle" placeholder="e.g., Building relationships, Intuition" autocomplete="off">
+                    <button type="button" class="btn" onclick="nextQuestion(4)">Next →</button>
+                </div>
+
+                <!-- Q5 -->
+                <div class="question" data-question="5">
+                    <div class="question-number">Question 5 of 5</div>
+                    <label class="question-label">If you had one irreplaceable superpower at work, what would it be?</label>
+                    <input type="text" name="superpower" placeholder="e.g., Connecting dots no one else sees" autocomplete="off">
+                    <button type="button" class="btn" onclick="calculateScore()">Get My Score 🎯</button>
+                </div>
+
+            </form>
+        </div><!-- /#quiz -->
+
+        <!-- ── RESULT ── -->
+        <div id="result">
+            <div class="result-inner">
+                <div class="oc-logo">🎓 OPEN CAMPUS</div>
+                <h1>Your AI Replaceability Score</h1>
+
+                <!-- Shareable Score Card -->
+                <div class="score-card" id="scoreCard">
+                    <div class="score-card-brand">Open Campus · AI Replaceability Test</div>
+
+                    <div class="score-circle">
+                        <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.4"/>
+                                    <stop offset="100%" stop-color="#00edbe"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Track -->
+                            <circle cx="110" cy="110" r="95"
+                                    fill="none"
+                                    stroke="rgba(255,255,255,0.12)"
+                                    stroke-width="18"/>
+                            <!-- Progress arc -->
+                            <circle id="scoreCircle"
+                                    cx="110" cy="110" r="95"
+                                    fill="none"
+                                    stroke="url(#grad)"
+                                    stroke-width="18"
+                                    stroke-dasharray="597"
+                                    stroke-dashoffset="597"
+                                    transform="rotate(-90 110 110)"
+                                    stroke-linecap="round"/>
+                            <!-- Score number -->
+                            <text id="scoreText" x="110" y="105"
+                                  text-anchor="middle"
+                                  dominant-baseline="middle"
+                                  class="score-number">0%</text>
+                            <!-- Label below -->
+                            <text x="110" y="148"
+                                  text-anchor="middle"
+                                  class="score-label-text">Replaceability</text>
+                        </svg>
+                    </div>
+
+                    <div class="result-message" id="resultMessage"></div>
+                    <div class="result-role-tag" id="resultRoleTag"></div>
+                    <div class="result-description" id="resultDescription"></div>
+                </div>
+
+                <!-- Share -->
+                <div class="share-section">
+                    <div class="share-label">Share your score</div>
+                    <div class="share-buttons">
+                        <button class="share-btn twitter"  onclick="shareTwitter()">𝕏 Share on X</button>
+                        <button class="share-btn linkedin" onclick="shareLinkedIn()">💼 LinkedIn</button>
+                        <button class="share-btn copy"     onclick="copyLink(event)">🔗 Copy Link</button>
+                    </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="cta-block">
+                    <div class="cta-eyebrow">Ready to future-proof your career?</div>
+                    <div class="cta-headline">Build AI skills that keep you irreplaceable</div>
+                    <div class="cta-subtext">Explore AI agents, tools, and courses designed for professionals who want to stay ahead — not get left behind.</div>
+                    <a href="https://agents.opencampus.xyz" target="_blank" rel="noopener" class="cta-btn">
+                        Explore Open Campus Agents
+                        <span class="cta-btn-arrow">→</span>
+                    </a>
+                </div>
+
+                <!-- Retry -->
+                <button class="btn retry-btn" onclick="retryQuiz()">↩ Take Quiz Again</button>
+
+            </div>
+        </div><!-- /#result -->
+
+    </div><!-- /.container -->
+
+    <script>
+        let currentQuestion = 1;
+        const totalQuestions = 5;
+        let userAnswers = {};
+
+        // Set initial progress
+        document.getElementById('progressBar').style.width = '20%';
+
+        function nextQuestion(questionNum) {
+            const currentQ = document.querySelector(`.question[data-question="${questionNum}"]`);
+            const input = currentQ.querySelector('input, select');
+
+            if (!input.value.trim()) {
+                input.focus();
+                input.style.borderColor = '#e53e3e';
+                setTimeout(() => { input.style.borderColor = ''; }, 1200);
+                return;
+            }
+
+            userAnswers[input.name] = input.value.trim();
+            currentQ.classList.remove('active');
+
+            const nextQ = document.querySelector(`.question[data-question="${questionNum + 1}"]`);
+            nextQ.classList.add('active');
+            currentQuestion = questionNum + 1;
+
+            document.getElementById('progressBar').style.width = (currentQuestion / totalQuestions) * 100 + '%';
+        }
+
+        function calculateScore() {
+            const lastQ = document.querySelector('.question[data-question="5"]');
+            const input = lastQ.querySelector('input');
+
+            if (!input.value.trim()) {
+                input.focus();
+                input.style.borderColor = '#e53e3e';
+                setTimeout(() => { input.style.borderColor = ''; }, 1200);
+                return;
+            }
+
+            userAnswers[input.name] = input.value.trim();
+
+            // ── Scoring Algorithm (unchanged) ──
+            let baseScore = Math.floor(Math.random() * 30) + 20; // 20–50 base
+
+            const role = userAnswers.role.toLowerCase();
+            if (role.includes('engineer') || role.includes('developer') || role.includes('analyst')) {
+                baseScore += 15;
+            } else if (role.includes('artist') || role.includes('therapist') || role.includes('teacher')) {
+                baseScore -= 15;
+            }
+
+            const education = userAnswers.education;
+            if (education === 'phd' || education === 'masters') {
+                baseScore -= 10;
+            }
+
+            const finalScore = Math.min(85, Math.max(5, baseScore));
+            showResult(finalScore);
+        }
+
+        function showResult(score) {
+            // Progress to 100%
+            document.getElementById('progressBar').style.width = '100%';
+
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('result').classList.add('active');
+
+            // Populate role tag
+            if (userAnswers.role) {
+                document.getElementById('resultRoleTag').textContent = userAnswers.role;
+            }
+
+            // ── Score range copy (unchanged) ──
+            const message     = document.getElementById('resultMessage');
+            const description = document.getElementById('resultDescription');
+
+            if (score < 30) {
+                message.textContent     = "🎉 You're Irreplaceable!";
+                description.textContent = "Your unique human qualities and skills make you extremely difficult to replace with AI. Your creativity, empathy, and strategic thinking are invaluable.";
+            } else if (score < 60) {
+                message.textContent     = "⚖️ You're Augmentable";
+                description.textContent = "AI can enhance your work, but can't replace you. Your human judgment and creativity remain essential, while AI handles the routine tasks.";
+            } else {
+                message.textContent     = "🤖 High Automation Risk";
+                description.textContent = "Many aspects of your role could be automated by AI. Time to focus on uniquely human skills like creativity, strategy, and relationship building.";
+            }
+
+            // ── Animate circle ──
+            const circle = document.getElementById('scoreCircle');
+            const circumference = 597;
+            const offset = circumference - (score / 100) * circumference;
+
+            setTimeout(() => {
+                circle.style.transition = 'stroke-dashoffset 1.5s ease';
+                circle.style.strokeDashoffset = offset;
+            }, 100);
+
+            // ── Counter animation ──
+            const scoreText = document.getElementById('scoreText');
+            let counter = 0;
+            const interval = setInterval(() => {
+                counter++;
+                scoreText.textContent = counter + '%';
+                if (counter >= score) clearInterval(interval);
+            }, 20);
+
+            window.userScore = score;
+        }
+
+        function shareTwitter() {
+            const score = window.userScore;
+            const text  = `I just took the AI Replaceability Test by @opencampus_xyz and scored ${score}%! 🤖 How replaceable are you? Take the test:`;
+            const url   = window.location.href;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        function shareLinkedIn() {
+            const url = window.location.href;
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        function copyLink(event) {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const btn = event.currentTarget;
+                const orig = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => { btn.textContent = orig; }, 2000);
+            });
+        }
+
+        function retryQuiz() {
+            currentQuestion = 1;
+            userAnswers     = {};
+            window.userScore = undefined;
+
+            document.getElementById('result').classList.remove('active');
+            document.getElementById('quiz').style.display = 'block';
+
+            document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
+            document.querySelector('.question[data-question="1"]').classList.add('active');
+
+            document.getElementById('progressBar').style.width = '20%';
+            document.getElementById('quizForm').reset();
+
+            // Reset circle
+            document.getElementById('scoreCircle').style.transition = 'none';
+            document.getElementById('scoreCircle').style.strokeDashoffset = '597';
+            document.getElementById('scoreText').textContent = '0%';
+        }
+    </script>
+</body>
+</html>
