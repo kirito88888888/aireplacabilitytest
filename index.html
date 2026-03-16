@@ -51,12 +51,15 @@
 
         /* ── Container ── */
         .container {
-            background: var(--white);
+            background: rgba(10, 10, 20, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 24px;
             padding: 50px 40px;
             max-width: 680px;
             width: 100%;
-            box-shadow: 0 9px 40px 0 rgba(0, 0, 0, 0.35);
+            box-shadow: 0 9px 40px 0 rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 1;
         }
@@ -64,7 +67,7 @@
         h1 {
             font-size: 30px;
             font-weight: 700;
-            color: var(--blue);
+            color: #ffffff;
             margin-bottom: 12px;
             text-align: center;
             line-height: 1.2;
@@ -72,7 +75,7 @@
 
         .subtitle {
             text-align: center;
-            color: var(--text-dark);
+            color: #a0a0b0;
             margin-bottom: 28px;
             font-size: 16px;
             font-weight: 500;
@@ -88,7 +91,7 @@
             display: block;
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-dark);
+            color: #a0a0b0;
             margin-bottom: 10px;
         }
 
@@ -100,19 +103,19 @@
         .name-input {
             width: 100%;
             padding: 14px 18px;
-            border: 1.5px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 12px;
             font-size: 15px;
             font-family: 'Poppins', sans-serif;
-            background: var(--white);
-            color: var(--text-black);
+            background: rgba(255, 255, 255, 0.07);
+            color: #a0a0b0;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
             -webkit-appearance: none;
             appearance: none;
         }
 
         .name-input::placeholder {
-            color: #aaa;
+            color: #a0a0b0;
         }
 
         .name-input:focus {
@@ -124,7 +127,7 @@
         /* ── Progress Bar ── */
         .progress-bar {
             height: 6px;
-            background: var(--progress-bg);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 10px;
             margin-bottom: 40px;
             overflow: hidden;
@@ -166,7 +169,7 @@
         .question-label {
             font-size: 18px;
             font-weight: 700;
-            color: var(--text-black);
+            color: #ffffff;
             margin-bottom: 20px;
             display: block;
             line-height: 1.5;
@@ -183,14 +186,14 @@
         .option {
             position: relative;
             padding: 14px 18px 14px 48px;
-            border: 1.5px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             font-size: 15px;
             font-weight: 500;
-            color: var(--text-black);
+            color: #e0e0f0;
             cursor: pointer;
             transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
-            background: var(--white);
+            background: rgba(255, 255, 255, 0.05);
             text-align: left;
             line-height: 1.4;
             user-select: none;
@@ -204,14 +207,14 @@
             transform: translateY(-50%);
             width: 18px;
             height: 18px;
-            border: 2px solid var(--border);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
         }
 
         .option:hover {
             border-color: var(--purple);
-            background: #f8f8ff;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .option:hover::before {
@@ -220,15 +223,15 @@
 
         .option.selected {
             border-color: var(--blue);
-            background: linear-gradient(135deg, #f0f1ff 0%, #f8f8ff 100%);
-            color: var(--blue);
+            background: rgba(20, 27, 235, 0.2);
+            color: #ffffff;
             font-weight: 600;
         }
 
         .option.selected::before {
             border-color: var(--blue);
             background: var(--blue);
-            box-shadow: inset 0 0 0 3px var(--white);
+            box-shadow: inset 0 0 0 3px #0a0a12;
         }
 
         /* ── Buttons ── */
@@ -280,9 +283,9 @@
 
         /* ── Download Card Button ── */
         .download-btn {
-            background: var(--white);
-            border: 2px solid var(--border);
-            color: var(--text-dark);
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e0e0f0;
             padding: 13px 22px;
             border-radius: 10px;
             font-size: 14px;
@@ -306,7 +309,7 @@
         /* Description — outside the card */
         .result-description {
             font-size: 15px;
-            color: var(--text-dark);
+            color: #a0a0b0;
             line-height: 1.7;
             font-weight: 500;
             margin: 16px 0 24px;
@@ -418,8 +421,8 @@
 
         /* ── CTA Block ── */
         .cta-block {
-            background: linear-gradient(135deg, #f0f1ff 0%, #e8fdf9 100%);
-            border: 1.5px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             padding: 28px 28px 24px;
             margin: 16px 0 20px;
@@ -438,14 +441,14 @@
         .cta-headline {
             font-size: 19px;
             font-weight: 700;
-            color: var(--text-dark);
+            color: #ffffff;
             line-height: 1.35;
             margin-bottom: 8px;
         }
 
         .cta-subtext {
             font-size: 14px;
-            color: #555;
+            color: #a0a0b0;
             font-weight: 500;
             line-height: 1.6;
             margin-bottom: 20px;
