@@ -38,31 +38,16 @@
 
         body {
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-dark);
+            background: #0a0a12;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
-            transition: background 0.5s ease;
         }
 
-        body.results-active {
-            background: var(--bg-light);
-        }
-
-        /* ── Particle canvas ── */
-        #bgCanvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        body.results-active #bgCanvas {
-            display: none;
-        }
+        /* ── Particle canvas (hidden — terminal bg replaces it) ── */
+        #bgCanvas { display: none; }
 
         /* ── Container ── */
         .container {
@@ -565,10 +550,90 @@
 
             .oc-logo-fixed-text { font-size: 13px; }
         }
+
+        /* ════════════════════════════════════════
+           TERMINAL BACKGROUND
+        ════════════════════════════════════════ */
+        #terminalBg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* Faint grid overlay */
+        .terminal-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Ticker rows */
+        .ticker-row {
+            position: absolute;
+            left: 0;
+            right: 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .ticker-track {
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .ticker-item {
+            display: inline-block;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            color: rgba(255,255,255,0.15);
+            margin-right: 56px;
+            letter-spacing: 0.5px;
+            transition: color 0.2s ease-out;
+        }
+
+        .ticker-item * { transition: color 0.2s ease-out; }
+
+        /* Status tag base colors */
+        .status-at-risk                              { color: rgba(217,119,6,0.55); }
+        .status-displaced,
+        .status-automated,
+        .status-high-risk                            { color: rgba(220,38,38,0.55); }
+        .status-stable,
+        .status-in-demand                            { color: rgba(22,163,74,0.55); }
+        .status-monitoring                           { color: rgba(202,138,4,0.55); }
+
+        /* Flash state — role text + status tag both brighten */
+        .ticker-flash                                { color: rgba(255,255,255,0.65) !important; }
+        .ticker-flash .status-at-risk                { color: rgba(217,119,6,0.95) !important; }
+        .ticker-flash .status-displaced,
+        .ticker-flash .status-automated,
+        .ticker-flash .status-high-risk              { color: rgba(220,38,38,0.95) !important; }
+        .ticker-flash .status-stable,
+        .ticker-flash .status-in-demand              { color: rgba(22,163,74,0.95) !important; }
+        .ticker-flash .status-monitoring             { color: rgba(202,138,4,0.95) !important; }
+
+        @keyframes tickerScroll {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
     </style>
 </head>
 <body>
-    <!-- Particle canvas (quiz only) -->
+    <!-- Terminal background -->
+    <div id="terminalBg" aria-hidden="true">
+        <div class="terminal-grid"></div>
+        <div class="ticker-row" style="top:11%"><div class="ticker-track" id="track1"></div></div>
+        <div class="ticker-row" style="top:34%"><div class="ticker-track" id="track2"></div></div>
+        <div class="ticker-row" style="top:60%"><div class="ticker-track" id="track3"></div></div>
+        <div class="ticker-row" style="top:82%"><div class="ticker-track" id="track4"></div></div>
+    </div>
+
+    <!-- Particle canvas (kept for compatibility, hidden) -->
     <canvas id="bgCanvas"></canvas>
 
     <div class="container">
@@ -1207,6 +1272,60 @@
         const canvasCtx   = scoreCanvas.getContext('2d');
         canvasCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
     }
+
+
+    /* ═══════════════════════════════════════════
+       TERMINAL BACKGROUND - TICKERS & FLASH
+    ═══════════════════════════════════════════ */
+    (function initTerminal() {
+        const ITEMS = [
+            { role: 'FINANCIAL ANALYST',  status: 'AT RISK',    cls: 'at-risk'    },
+            { role: 'CONTENT WRITER',     status: 'DISPLACED',  cls: 'displaced'  },
+            { role: 'DATA ENTRY',         status: 'AUTOMATED',  cls: 'automated'  },
+            { role: 'SENIOR DEVELOPER',   status: 'STABLE',     cls: 'stable'     },
+            { role: 'ACCOUNT MANAGER',    status: 'AT RISK',    cls: 'at-risk'    },
+            { role: 'GRAPHIC DESIGNER',   status: 'MONITORING', cls: 'monitoring' },
+            { role: 'PARALEGAL',          status: 'HIGH RISK',  cls: 'high-risk'  },
+            { role: 'PROMPT ENGINEER',    status: 'IN DEMAND',  cls: 'in-demand'  },
+            { role: 'COPYWRITER',         status: 'AT RISK',    cls: 'at-risk'    },
+            { role: 'PROJECT MANAGER',    status: 'STABLE',     cls: 'stable'     },
+            { role: 'SEO SPECIALIST',     status: 'AUTOMATED',  cls: 'automated'  },
+            { role: 'CUSTOMER SUPPORT',   status: 'DISPLACED',  cls: 'displaced'  },
+            { role: 'UX RESEARCHER',      status: 'STABLE',     cls: 'stable'     },
+            { role: 'TRADING ANALYST',    status: 'AT RISK',    cls: 'at-risk'    },
+        ];
+
+        const ROWS = [
+            { id: 'track1', duration: 60, delay: 0,  reverse: false },
+            { id: 'track2', duration: 45, delay: 12, reverse: true  },
+            { id: 'track3', duration: 55, delay: 28, reverse: false },
+            { id: 'track4', duration: 50, delay: 8,  reverse: true  },
+        ];
+
+        const rowHtml = ITEMS.map(it =>
+            `<span class="ticker-item">${it.role} &bull; <span class="status-${it.cls}">${it.status}</span></span>`
+        ).join('');
+
+        ROWS.forEach(cfg => {
+            const track = document.getElementById(cfg.id);
+            if (!track) return;
+            track.innerHTML = rowHtml + rowHtml; // duplicate for seamless loop
+            track.style.animation = `tickerScroll ${cfg.duration}s linear -${cfg.delay}s infinite`;
+            if (cfg.reverse) track.style.animationDirection = 'reverse';
+        });
+
+        // Occasional flash effect
+        function scheduleFlash() {
+            const items = document.querySelectorAll('.ticker-item');
+            if (items.length > 0) {
+                const item = items[Math.floor(Math.random() * items.length)];
+                item.classList.add('ticker-flash');
+                setTimeout(() => item.classList.remove('ticker-flash'), 500);
+            }
+            setTimeout(scheduleFlash, 2000 + Math.random() * 2500);
+        }
+        setTimeout(scheduleFlash, 1200);
+    })();
     </script>
 </body>
 </html>
