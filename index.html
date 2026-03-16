@@ -285,116 +285,37 @@
 
         .result-inner { text-align: center; }
 
-        /* ── Score Card (screenshot target) ── */
-        .score-card {
-            background: linear-gradient(145deg, #0d12b3 0%, #141beb 45%, #2e32f0 75%, #00c9a0 100%);
+        /* ── Score Card Canvas ── */
+        #scoreCanvas {
+            width: 100%;
             border-radius: 20px;
-            padding: 40px 32px 36px;
-            margin: 28px 0 16px;
-            position: relative;
-            overflow: hidden;
+            display: block;
+            margin: 28px 0 0;
         }
 
-        .score-card::before {
-            content: '';
-            position: absolute;
-            top: -60px; right: -60px;
-            width: 220px; height: 220px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 50%;
-        }
-
-        .score-card::after {
-            content: '';
-            position: absolute;
-            bottom: -80px; left: -40px;
-            width: 260px; height: 260px;
-            background: rgba(0,237,190,0.08);
-            border-radius: 50%;
-        }
-
-        .score-card-brand {
-            font-size: 13px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.65);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-        }
-
-        .score-circle {
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .score-circle svg { width: 100%; height: 100%; }
-
-        #scoreText {
-            font-size: 52px;
-            font-weight: 800;
-            fill: #ffffff;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .score-label-text {
-            font-size: 12px;
-            fill: rgba(255,255,255,0.7);
-            font-family: 'Poppins', sans-serif;
+        /* ── Download Card Button ── */
+        .download-btn {
+            background: var(--white);
+            border: 2px solid var(--border);
+            color: var(--text-dark);
+            padding: 13px 22px;
+            border-radius: 10px;
+            font-size: 14px;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            margin: 12px 0 20px;
         }
 
-        /* Name on score card */
-        .score-card-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.85);
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
-            display: none;
-        }
-
-        .score-card-name span {
-            background: rgba(255,255,255,0.15);
-            padding: 3px 14px;
-            border-radius: 20px;
-        }
-
-        /* Tagline — italic, smaller */
-        .result-tagline {
-            font-size: 13px;
-            font-weight: 500;
-            font-style: italic;
-            color: rgba(255,255,255,0.72);
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
-            line-height: 1.5;
-        }
-
-        /* Result label — big and bold */
-        .result-message {
-            font-size: 26px;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 14px;
-            position: relative;
-            z-index: 1;
-            line-height: 1.2;
-        }
-
-        /* Better-than comparison */
-        .result-better {
-            font-size: 13px;
-            font-weight: 500;
-            color: rgba(255,255,255,0.8);
-            position: relative;
-            z-index: 1;
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12);
         }
 
         /* Description — outside the card */
@@ -448,7 +369,6 @@
 
         .share-btn.twitter  { background: #000000; color: #ffffff; }
         .share-btn.linkedin { background: #0077b5; color: #ffffff; }
-        .share-btn.copy     { background: var(--teal); color: var(--text-black); }
 
         /* ── Challenge Block ── */
         .challenge-block {
@@ -628,13 +548,6 @@
 
             .option { font-size: 14px; }
 
-            .score-card { padding: 32px 22px 28px; }
-
-            .score-circle { width: 155px; height: 155px; }
-
-            #scoreText { font-size: 44px; }
-
-            .result-message { font-size: 21px; }
 
             .share-buttons { flex-direction: column; }
 
@@ -754,45 +667,9 @@
             <div class="result-inner">
                 <h1>Your AI Replaceability Score</h1>
 
-                <!-- ── Shareable Score Card ── -->
-                <div class="score-card" id="scoreCard">
-                    <div class="score-card-brand">Open Campus · AI Replaceability Test</div>
-
-                    <div class="score-circle">
-                        <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.4"/>
-                                    <stop offset="100%" stop-color="#00edbe"/>
-                                </linearGradient>
-                            </defs>
-                            <circle cx="110" cy="110" r="95"
-                                    fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="18"/>
-                            <circle id="scoreCircle"
-                                    cx="110" cy="110" r="95"
-                                    fill="none" stroke="url(#grad)"
-                                    stroke-width="18" stroke-dasharray="597" stroke-dashoffset="597"
-                                    transform="rotate(-90 110 110)" stroke-linecap="round"/>
-                            <text id="scoreText" x="110" y="105"
-                                  text-anchor="middle" dominant-baseline="middle"
-                                  class="score-number">0%</text>
-                            <text x="110" y="148" text-anchor="middle" class="score-label-text">Replaceability</text>
-                        </svg>
-                    </div>
-
-                    <!-- Name badge (shown only if provided) -->
-                    <div class="score-card-name" id="scoreCardName"><span id="scoreCardNameText"></span></div>
-
-                    <!-- Tagline: italic, smaller -->
-                    <div class="result-tagline" id="resultTagline"></div>
-
-                    <!-- Result label: big + bold -->
-                    <div class="result-message" id="resultMessage"></div>
-
-                    <!-- Better-than comparison -->
-                    <div class="result-better" id="resultBetter"></div>
-                </div>
-                <!-- ── END Score Card ── -->
+                <!-- ── Score Card Canvas ── -->
+                <canvas id="scoreCanvas"></canvas>
+                <button class="download-btn" onclick="downloadCard()">⬇ Download Card</button>
 
                 <!-- Description below card (not on card) -->
                 <div class="result-description" id="resultDescription"></div>
@@ -803,7 +680,6 @@
                     <div class="share-buttons">
                         <button class="share-btn twitter" id="twitterBtn" onclick="shareTwitter()">𝕏 Share on X</button>
                         <button class="share-btn linkedin" onclick="shareLinkedIn()">💼 LinkedIn</button>
-                        <button class="share-btn copy"    onclick="copyLink(event)">🔗 Copy Link</button>
                     </div>
                 </div>
 
@@ -820,7 +696,7 @@
                 <div class="cta-block">
                     <div class="cta-eyebrow">Ready to future-proof your career?</div>
                     <div class="cta-headline">Build AI skills that keep you irreplaceable</div>
-                    <div class="cta-subtext">Explore AI agents, tools, and courses designed for professionals who want to stay ahead — not get left behind.</div>
+                    <div class="cta-subtext">Explore AI agents, tools, and courses designed for professionals who want to stay ahead - not get left behind.</div>
                     <a href="https://agents.opencampus.xyz" target="_blank" rel="noopener" class="cta-btn">
                         Explore Open Campus Agents
                         <span class="cta-btn-arrow">→</span>
@@ -845,9 +721,6 @@
         </svg>
         <span class="oc-logo-fixed-text">Open Campus</span>
     </a>
-
-    <!-- html2canvas for score card screenshot -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
     /* ═══════════════════════════════════════════
@@ -1021,15 +894,15 @@
             label:       "You're Built Different",
             tagline:     "AI tried. AI failed. You're built different.",
             message:     "🔥 You're Built Different",
-            description: "Your work lives in the space AI can't reach — judgment, relationships, creativity under pressure. You're not just safe, you're the reason humans still run the show.",
+            description: "Your work lives in the space AI can't reach - judgment, relationships, creativity under pressure. You're not just safe, you're the reason humans still run the show.",
             betterThan:  89
         },
         {
             max: 40,
             label:       "Mostly Safe. For Now.",
-            tagline:     "Mostly safe — but don't get comfortable.",
+            tagline:     "Mostly safe - but don't get comfortable.",
             message:     "⚡ Mostly Safe. For Now.",
-            description: "You've got strong human advantages but some of what you do is already on AI's radar. The gap between you and automation is real — just don't stop widening it.",
+            description: "You've got strong human advantages but some of what you do is already on AI's radar. The gap between you and automation is real - just don't stop widening it.",
             betterThan:  71
         },
         {
@@ -1037,7 +910,7 @@
             label:       "Half and Half",
             tagline:     "Half of what you do, AI can already do. The other half is buying you time.",
             message:     "⚠️ Half and Half",
-            description: "You're at the inflection point. The skills that make you irreplaceable exist — but so does the part of your job that's quietly being automated. Time to double down on the human half.",
+            description: "You're at the inflection point. The skills that make you irreplaceable exist - but so does the part of your job that's quietly being automated. Time to double down on the human half.",
             betterThan:  45
         },
         {
@@ -1045,7 +918,7 @@
             label:       "Your LinkedIn Is About To Get Interesting",
             tagline:     "Your LinkedIn is about to get very interesting.",
             message:     "👀 Your LinkedIn Is About To Get Interesting",
-            description: "A significant portion of your current role is well within AI's capabilities. That's not a death sentence — it's a signal. The professionals who act on this early are the ones who come out ahead.",
+            description: "A significant portion of your current role is well within AI's capabilities. That's not a death sentence - it's a signal. The professionals who act on this early are the ones who come out ahead.",
             betterThan:  22
         },
         {
@@ -1053,7 +926,7 @@
             label:       "We Need To Talk",
             tagline:     "We need to talk.",
             message:     "🚨 We Need To Talk",
-            description: "Look, the data doesn't lie. Most of what defines your current role is already being automated or will be very soon. But here's the thing — knowing this now puts you ahead of everyone who finds out the hard way.",
+            description: "Look, the data doesn't lie. Most of what defines your current role is already being automated or will be very soon. But here's the thing - knowing this now puts you ahead of everyone who finds out the hard way.",
             betterThan:  8
         }
     ];
@@ -1073,110 +946,160 @@
         document.getElementById('result').classList.add('active');
 
         const r = getResult(score);
-
-        // Name badge
         const name = document.getElementById('nameInput').value.trim();
-        if (name) {
-            document.getElementById('scoreCardNameText').textContent = name;
-            document.getElementById('scoreCardName').style.display = 'block';
-        }
+        const q5Answer = questionAnswers[5] || '';
 
-        document.getElementById('resultTagline').textContent    = r.tagline;
-        document.getElementById('resultMessage').textContent    = r.message;
         document.getElementById('resultDescription').textContent = r.description;
-        document.getElementById('resultBetter').textContent     =
-            `Better than ${r.betterThan}% of people who took this test`;
-
-        // Animate circle
-        const circle = document.getElementById('scoreCircle');
-        setTimeout(() => {
-            circle.style.transition    = 'stroke-dashoffset 1.5s ease';
-            circle.style.strokeDashoffset = 597 - (score / 100) * 597;
-        }, 100);
-
-        // Counter
-        const scoreText = document.getElementById('scoreText');
-        let counter = 0;
-        const iv = setInterval(() => {
-            scoreText.textContent = (++counter) + '%';
-            if (counter >= score) clearInterval(iv);
-        }, 20);
 
         window.userScore       = score;
         window.userResultLabel = r.label;
 
-        // Submit to Google Sheets (fire-and-forget) — reuses `name` declared above
+        // Draw score card canvas (wait for fonts to be ready)
+        document.fonts.ready.then(() => drawScoreCard(score, r, name, q5Answer));
+
+        // Submit to Google Sheets (fire-and-forget)
         submitToSheets(score, r.label, name, questionAnswers);
+    }
+
+    function drawScoreCard(score, r, name, q5Answer) {
+        const canvas = document.getElementById('scoreCanvas');
+        const W = 600, H = 400;
+        canvas.width  = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+
+        // Clip to rounded rect
+        ctx.beginPath();
+        const rad = 20;
+        ctx.moveTo(rad, 0);
+        ctx.lineTo(W - rad, 0);
+        ctx.quadraticCurveTo(W, 0, W, rad);
+        ctx.lineTo(W, H - rad);
+        ctx.quadraticCurveTo(W, H, W - rad, H);
+        ctx.lineTo(rad, H);
+        ctx.quadraticCurveTo(0, H, 0, H - rad);
+        ctx.lineTo(0, rad);
+        ctx.quadraticCurveTo(0, 0, rad, 0);
+        ctx.closePath();
+        ctx.clip();
+
+        // Background gradient based on score tier
+        let c1, c2;
+        if (score <= 30) {
+            c1 = '#0a3d2e'; c2 = '#1a6b52';   // deep green
+        } else if (score <= 60) {
+            c1 = '#5c2800'; c2 = '#a34f08';   // amber/orange
+        } else {
+            c1 = '#3d0a0a'; c2 = '#7a1515';   // deep red
+        }
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, c1);
+        grad.addColorStop(1, c2);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Decorative circles
+        ctx.save();
+        ctx.globalAlpha = 0.06;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(W - 50, -30, 150, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(-30, H + 30, 160, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Brand label
+        ctx.font        = '700 10px "Poppins", sans-serif';
+        ctx.fillStyle   = 'rgba(255,255,255,0.55)';
+        ctx.letterSpacing = '2px';
+        ctx.fillText('OPEN CAMPUS  ·  AI REPLACEABILITY TEST', W / 2, 32);
+        ctx.letterSpacing = '0px';
+
+        // Name (if provided)
+        let scoreY = 182;
+        if (name) {
+            ctx.font      = '600 17px "Poppins", sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.fillText(name, W / 2, 66);
+            scoreY = 190;
+        }
+
+        // Score % - dominant element
+        ctx.font      = '800 108px "Poppins", sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(score + '%', W / 2, scoreY);
+
+        // REPLACEABILITY label
+        ctx.font          = '600 11px "Poppins", sans-serif';
+        ctx.fillStyle     = 'rgba(255,255,255,0.55)';
+        ctx.letterSpacing = '2px';
+        ctx.fillText('REPLACEABILITY', W / 2, scoreY + 60);
+        ctx.letterSpacing = '0px';
+
+        // Tier headline
+        ctx.font      = '700 22px "Poppins", sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(r.label, W / 2, scoreY + 96);
+
+        // Better than
+        ctx.font      = '500 13px "Poppins", sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.72)';
+        ctx.fillText('Better than ' + r.betterThan + '% of people who took this test', W / 2, scoreY + 128);
+
+        // Sealed by (Q5 mapping)
+        const Q5_MAP = {
+            "I navigate politics, personalities, and trust - AI can't read a room": "Sealed by: AI can't read the room you own",
+            "I make high-stakes calls with incomplete information under pressure":   "Sealed by: You decide when it matters most",
+            "I create genuinely new things - not remixes of what already exists":   "Sealed by: You build what didn't exist yet",
+            "Honestly? I'm asking myself that more than I'd like":                  "Sealed by: Honest enough to ask the hard question"
+        };
+        const sealedText = Q5_MAP[q5Answer];
+        if (sealedText) {
+            ctx.font      = 'italic 500 12px "Poppins", sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.62)';
+            ctx.fillText(sealedText, W / 2, scoreY + 160);
+        }
+    }
+
+    function downloadCard() {
+        const canvas = document.getElementById('scoreCanvas');
+        const a      = document.createElement('a');
+        a.href       = canvas.toDataURL('image/png');
+        a.download   = 'my-ai-replaceability-score.png';
+        a.click();
     }
 
 
     /* ═══════════════════════════════════════════
-       SHARE — X (with html2canvas image capture)
+       SHARE - X
     ═══════════════════════════════════════════ */
     async function shareTwitter() {
-        const score    = window.userScore;
-        const label    = window.userResultLabel;
-        const url      = window.location.href;
-        const tweetText =
-            `I just took the AI Replaceability Test — I'm ${score}% replaceable. ${label}. Are you next? 👇 via @opencampus_xyz #AIReplaceability`;
+        const score     = window.userScore;
+        const label     = window.userResultLabel;
+        const url       = window.location.href;
+        const tweetText = `I just took the AI Replaceability Test and scored ${score}% replaceable. ${label}. Take it yourself 👇 ${url}`;
 
-        const btn  = document.getElementById('twitterBtn');
-        const orig = btn.textContent;
-        btn.textContent = '⏳ Capturing...';
-        btn.disabled    = true;
-
-        try {
-            const canvas = await html2canvas(document.getElementById('scoreCard'), {
-                scale:           2,
-                useCORS:         true,
-                allowTaint:      true,
-                logging:         false,
-                backgroundColor: null
-            });
-
-            btn.textContent = orig;
-            btn.disabled    = false;
-
-            canvas.toBlob(async (blob) => {
-                const file = new File([blob], 'ai-replaceability-score.png', { type: 'image/png' });
-
-                // Try native share with file (works on mobile → share sheet includes X)
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({
-                            text:  tweetText + ' ' + url,
-                            files: [file]
-                        });
-                        return;
-                    } catch (e) { /* user cancelled or unsupported — fall through */ }
+        const scoreCanvas = document.getElementById('scoreCanvas');
+        if (scoreCanvas && navigator.canShare) {
+            try {
+                const blob = await new Promise(res => scoreCanvas.toBlob(res, 'image/png'));
+                const file = new File([blob], 'my-ai-replaceability-score.png', { type: 'image/png' });
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({ text: tweetText, files: [file] });
+                    return;
                 }
-
-                // Desktop fallback: download image + open tweet
-                const a   = document.createElement('a');
-                a.href     = canvas.toDataURL('image/png');
-                a.download = 'ai-replaceability-score.png';
-                a.click();
-
-                btn.textContent = '🖼 Image saved — add it to your tweet!';
-                setTimeout(() => { btn.textContent = orig; }, 3500);
-
-                setTimeout(() => {
-                    window.open(
-                        `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}`,
-                        '_blank'
-                    );
-                }, 400);
-            }, 'image/png');
-
-        } catch (err) {
-            // html2canvas failed — plain tweet fallback
-            btn.textContent = orig;
-            btn.disabled    = false;
-            window.open(
-                `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}`,
-                '_blank'
-            );
+            } catch (e) { /* fall through to web intent */ }
         }
+
+        window.open(
+            `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`,
+            '_blank'
+        );
     }
 
     function shareLinkedIn() {
@@ -1184,15 +1107,6 @@
             `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`,
             '_blank'
         );
-    }
-
-    function copyLink(event) {
-        navigator.clipboard.writeText(window.location.href).then(() => {
-            const btn  = event.currentTarget;
-            const orig = btn.textContent;
-            btn.textContent = '✅ Copied!';
-            setTimeout(() => { btn.textContent = orig; }, 2000);
-        });
     }
 
     function challengeColleague(event) {
@@ -1288,15 +1202,10 @@
         document.getElementById('progressBar').style.width = '20%';
         document.getElementById('nameInput').value = '';
 
-        // Reset name badge
-        document.getElementById('scoreCardName').style.display = 'none';
-        document.getElementById('scoreCardNameText').textContent = '';
-
-        // Reset circle
-        const circle = document.getElementById('scoreCircle');
-        circle.style.transition      = 'none';
-        circle.style.strokeDashoffset = '597';
-        document.getElementById('scoreText').textContent = '0%';
+        // Clear score card canvas
+        const scoreCanvas = document.getElementById('scoreCanvas');
+        const canvasCtx   = scoreCanvas.getContext('2d');
+        canvasCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
     }
     </script>
 </body>
