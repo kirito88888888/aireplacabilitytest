@@ -496,23 +496,18 @@
         /* ── Fixed Top-Left Logo ── */
         .oc-logo-fixed {
             position: fixed;
-            top: 20px; left: 24px;
+            top: 20px; left: 8px;
             z-index: 100;
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(255,255,255,0.92);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 8px 14px 8px 10px;
-            border-radius: 40px;
-            box-shadow: 0 2px 12px rgba(20,27,235,0.12);
+            background: transparent;
+            padding: 8px;
             text-decoration: none;
-            transition: box-shadow 0.2s ease, transform 0.2s ease;
+            transition: transform 0.2s ease;
         }
 
         .oc-logo-fixed:hover {
-            box-shadow: 0 4px 18px rgba(20,27,235,0.2);
             transform: translateY(-1px);
         }
 
@@ -551,7 +546,7 @@
 
             .cta-headline { font-size: 17px; }
 
-            .oc-logo-fixed { top: 14px; left: 14px; padding: 6px 12px 6px 8px; }
+            .oc-logo-fixed { top: 14px; left: 8px; padding: 8px; }
 
             .oc-logo-fixed-text { font-size: 13px; }
         }
@@ -913,7 +908,7 @@
 
     <!-- Fixed top-left Open Campus logo -->
     <a href="https://opencampus.xyz" target="_blank" rel="noopener" class="oc-logo-fixed">
-        <img src="logo.png" width="32" height="32" alt="Open Campus logo" style="display:block;"/>
+        <img src="logo.png" height="32" alt="Open Campus logo" style="display:block;width:auto;"/>
         <span class="oc-logo-fixed-text">Open Campus</span>
     </a>
 
