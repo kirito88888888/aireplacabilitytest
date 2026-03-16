@@ -36,14 +36,17 @@
             --gradient: linear-gradient(90deg, #141beb 0%, #00edbe 100%);
         }
 
+        html { height: 100%; overflow: hidden; }
+
         body {
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #0a0a12;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
+            padding: 20px;
         }
 
         /* ── Particle canvas (hidden — terminal bg replaces it) ── */
@@ -59,6 +62,9 @@
             padding: 50px 40px;
             max-width: 680px;
             width: 100%;
+            max-height: 92vh;
+            overflow-y: auto;
+            overflow-x: hidden;
             box-shadow: 0 9px 40px 0 rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 1;
@@ -275,11 +281,12 @@
 
         /* ── Score Card Canvas ── */
         #scoreCanvas {
+            display: block;
+            margin: 12px auto 0;
+            border-radius: 20px;
+            /* display size is set dynamically in JS; max-width ensures it never overflows */
             max-width: 100%;
             height: auto;
-            border-radius: 20px;
-            display: block;
-            margin: 28px auto 0;
         }
 
         /* ── Download Card Button ── */
@@ -520,35 +527,78 @@
         }
 
         /* ── Responsive ── */
-        @media (max-width: 640px) {
-            body { padding: 24px 16px; align-items: flex-start; }
+        @media (max-width: 768px) {
+            body { padding: 16px; align-items: center; }
 
-            .container { padding: 36px 22px; border-radius: 20px; }
+            .container {
+                width: 95vw;
+                max-width: 95vw;
+                padding: 36px 16px;
+                border-radius: 20px;
+                max-height: 92vh;
+            }
 
-            h1 { font-size: 24px; }
+            h1 { font-size: 22px; }
 
             .subtitle { font-size: 15px; margin-bottom: 20px; }
 
             .question-label { font-size: 16px; }
 
-            .option { font-size: 14px; }
+            .option {
+                font-size: 14px;
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                width: 100%;
+            }
 
+            .btn { width: 100%; min-height: 44px; }
 
-            .share-buttons { flex-direction: column; }
+            .name-input { width: 100%; }
 
-            .share-btn { width: 100%; justify-content: center; }
+            .share-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .share-btn { width: 100%; justify-content: center; min-height: 44px; }
+
+            .download-btn { width: 100%; min-height: 44px; }
 
             .challenge-inner { flex-direction: column; }
 
             .challenge-text { text-align: center; }
 
-            .challenge-btn { width: 100%; text-align: center; }
+            .challenge-btn { width: 100%; text-align: center; min-height: 44px; }
 
             .cta-headline { font-size: 17px; }
 
             .oc-logo-fixed { top: 14px; left: 8px; padding: 8px; }
 
             .oc-logo-fixed-text { font-size: 13px; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 8px; }
+
+            .container {
+                width: 95vw;
+                max-width: 95vw;
+                padding: 28px 16px;
+                border-radius: 16px;
+            }
+
+            h1 { font-size: 20px; }
+
+            .question-label { font-size: 16px; }
+
+            .intro-headline-text { font-size: 18px !important; }
+
+            .intro-message-title { font-size: clamp(22px, 7vw, 36px) !important; }
+
+            .intro-message-sub { font-size: clamp(13px, 3.5vw, 16px) !important; }
+
+            .intro-cta { font-size: 16px; padding: 12px 24px; }
         }
 
         /* ════════════════════════════════════════
@@ -659,7 +709,7 @@
             padding: 0 48px;
             text-align: center;
             opacity: 0;
-            transition: opacity 0.15s ease;
+            transition: opacity 0.3s ease;
             pointer-events: none;
         }
         .intro-headline.show { opacity: 1; }
@@ -763,26 +813,6 @@
             <h1>AI Replaceability Test</h1>
             <p class="subtitle">Answer 5 quick questions to discover your replaceability score</p>
 
-            <!-- Optional name field -->
-            <div class="name-field">
-                <label class="name-field-label" for="nameInput">
-                    What should we call you?
-                </label>
-                <input type="text" id="nameInput" class="name-input"
-                       placeholder="Your name or @handle"
-                       autocomplete="off" maxlength="30">
-            </div>
-
-            <!-- Job title field -->
-            <div class="name-field">
-                <label class="name-field-label" for="jobInput">
-                    What is your current job?
-                </label>
-                <input type="text" id="jobInput" class="name-input"
-                       placeholder="e.g. Marketing Manager, Software Engineer"
-                       autocomplete="off" maxlength="60">
-            </div>
-
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
             </div>
@@ -820,10 +850,10 @@
                     <div class="question-number">Question 3 of 5</div>
                     <label class="question-label">When you use AI at work, what actually happens?</label>
                     <div class="options">
-                        <div class="option" data-score="2" onclick="selectOption(this,3)">I don't really use it - haven't found it useful</div>
+                        <div class="option" data-score="1" onclick="selectOption(this,3)">I don't really use it - haven't found it useful</div>
                         <div class="option" data-score="1" onclick="selectOption(this,3)">I use it for low-stakes stuff, wouldn't trust it with anything real</div>
                         <div class="option" data-score="0" onclick="selectOption(this,3)">It handles the grunt work, I handle everything that actually matters</div>
-                        <div class="option" data-score="3" onclick="selectOption(this,3)">I've basically built a version of my job around it</div>
+                        <div class="option" data-score="0" onclick="selectOption(this,3)">I've basically built a version of my job around it</div>
                     </div>
                     <button type="button" class="btn" id="btn3" onclick="nextQuestion(3)" disabled>Next →</button>
                 </div>
@@ -833,10 +863,10 @@
                     <div class="question-number">Question 4 of 5</div>
                     <label class="question-label">Your company loses access to you for 3 months. What breaks?</label>
                     <div class="options">
-                        <div class="option" data-score="0" onclick="selectOption(this,4)">Nothing major - someone could pick it up with a handover doc</div>
-                        <div class="option" data-score="1" onclick="selectOption(this,4)">Some things slow down but the machine keeps running</div>
-                        <div class="option" data-score="2" onclick="selectOption(this,4)">Key relationships and judgment calls stall - it's not transferable</div>
-                        <div class="option" data-score="3" onclick="selectOption(this,4)">The whole thing falls apart, I'm load-bearing infrastructure</div>
+                        <div class="option" data-score="3" onclick="selectOption(this,4)">Nothing major - someone could pick it up with a handover doc</div>
+                        <div class="option" data-score="2" onclick="selectOption(this,4)">Some things slow down but the machine keeps running</div>
+                        <div class="option" data-score="0" onclick="selectOption(this,4)">Key relationships and judgment calls stall - it's not transferable</div>
+                        <div class="option" data-score="0" onclick="selectOption(this,4)">The whole thing falls apart, I'm load-bearing infrastructure</div>
                     </div>
                     <button type="button" class="btn" id="btn4" onclick="nextQuestion(4)" disabled>Next →</button>
                 </div>
@@ -851,11 +881,30 @@
                         <div class="option" data-score="0" onclick="selectOption(this,5)">I create genuinely new things - not remixes of what already exists</div>
                         <div class="option" data-score="3" onclick="selectOption(this,5)">Honestly? I'm asking myself that more than I'd like</div>
                     </div>
-                    <button type="button" class="btn" id="btn5" onclick="calculateScore()" disabled>Get My Score 🎯</button>
+                    <button type="button" class="btn" id="btn5" onclick="showNameStep()" disabled>Get My Score 🎯</button>
                 </div>
 
             </div>
         </div><!-- /#quiz -->
+
+        <!-- ── NAME STEP (shown after Q5, before result) ── -->
+        <div id="nameStep" style="display:none;">
+            <h1>One last thing before your score...</h1>
+            <p class="subtitle" style="margin-top:12px;">These are optional — skip right through if you prefer.</p>
+            <div class="name-field" style="margin-top:28px;">
+                <label class="name-field-label" for="nameInput">What should we call you?</label>
+                <input type="text" id="nameInput" class="name-input"
+                       placeholder="Your name or @handle"
+                       autocomplete="off" maxlength="30">
+            </div>
+            <div class="name-field">
+                <label class="name-field-label" for="jobInput">What is your current job?</label>
+                <input type="text" id="jobInput" class="name-input"
+                       placeholder="e.g. Marketing Manager, Software Engineer"
+                       autocomplete="off" maxlength="60">
+            </div>
+            <button type="button" class="btn" id="revealBtn" onclick="revealScore()">Reveal My Score →</button>
+        </div>
 
         <!-- ── RESULT ── -->
         <div id="result">
@@ -1066,11 +1115,23 @@
             (currentQuestion / totalQuestions) * 100 + '%';
     }
 
-    function calculateScore() {
+    let _pendingScore = null;
+
+    function showNameStep() {
         if (questionScores[5] === undefined) return;
         const total = [1,2,3,4,5].reduce((s, k) => s + (questionScores[k] || 0), 0);
-        const finalScore = Math.round((total / 15) * 100);
-        showResult(finalScore);
+        _pendingScore = Math.round((total / 15) * 100);
+        document.getElementById('progressBar').style.width = '100%';
+        document.getElementById('quiz').style.display = 'none';
+        const ns = document.getElementById('nameStep');
+        ns.style.display = 'block';
+        ns.style.animation = 'fadeIn 0.4s ease';
+        document.getElementById('nameInput').focus();
+    }
+
+    function revealScore() {
+        document.getElementById('nameStep').style.display = 'none';
+        showResult(_pendingScore);
     }
 
 
@@ -1079,43 +1140,35 @@
     ═══════════════════════════════════════════ */
     const RESULTS = [
         {
-            max: 20,
+            max: 25,
             label:       "You're Built Different",
             tagline:     "AI tried. AI failed. You're built different.",
             message:     "🔥 You're Built Different",
-            description: "Your work lives in the space AI can't reach - judgment, relationships, creativity under pressure. You're not just safe, you're the reason humans still run the show.",
+            description: "Your work lives in the space AI can't reach — judgment, relationships, creativity under pressure. You're not just safe, you're the reason humans still run the show.",
             betterThan:  89
         },
         {
-            max: 40,
-            label:       "Mostly Safe. For Now.",
-            tagline:     "Mostly safe - but don't get comfortable.",
-            message:     "⚡ Mostly Safe. For Now.",
-            description: "You've got strong human advantages but some of what you do is already on AI's radar. The gap between you and automation is real - just don't stop widening it.",
-            betterThan:  71
+            max: 50,
+            label:       "You're Holding Your Ground",
+            tagline:     "Holding your ground — but the terrain is shifting.",
+            message:     "⚡ You're Holding Your Ground",
+            description: "You've got real human advantages and you're using them. But automation is advancing on multiple fronts. Keep widening the gap between what you do and what AI can replicate.",
+            betterThan:  65
         },
         {
-            max: 60,
-            label:       "Half and Half",
-            tagline:     "Half of what you do, AI can already do. The other half is buying you time.",
-            message:     "⚠️ Half and Half",
-            description: "You're at the inflection point. The skills that make you irreplaceable exist - but so does the part of your job that's quietly being automated. Time to double down on the human half.",
-            betterThan:  45
-        },
-        {
-            max: 80,
+            max: 75,
             label:       "Your LinkedIn Is About To Get Interesting",
             tagline:     "Your LinkedIn is about to get very interesting.",
             message:     "👀 Your LinkedIn Is About To Get Interesting",
-            description: "A significant portion of your current role is well within AI's capabilities. That's not a death sentence - it's a signal. The professionals who act on this early are the ones who come out ahead.",
-            betterThan:  22
+            description: "A significant portion of your current role is well within AI's capabilities. That's not a death sentence — it's a signal. The professionals who act on this early are the ones who come out ahead.",
+            betterThan:  35
         },
         {
             max: 100,
             label:       "We Need To Talk",
             tagline:     "We need to talk.",
             message:     "🚨 We Need To Talk",
-            description: "Look, the data doesn't lie. Most of what defines your current role is already being automated or will be very soon. But here's the thing - knowing this now puts you ahead of everyone who finds out the hard way.",
+            description: "Look, the data doesn't lie. Most of what defines your current role is already being automated or will be very soon. But here's the thing — knowing this now puts you ahead of everyone who finds out the hard way.",
             betterThan:  8
         }
     ];
@@ -1146,6 +1199,8 @@
 
         window.userScore       = score;
         window.userResultLabel = r.label;
+        window.userName        = name;
+        window.userJobTitle    = jobTitle;
 
         // Draw score card canvas (wait for fonts to be ready)
         document.fonts.ready.then(() => drawScoreCard(score, r, name, q5Answer, jobTitle));
@@ -1159,11 +1214,20 @@
         const DPR = Math.max(window.devicePixelRatio || 1, 2); // at least 2x for crisp output
         const W = 600, H = 400; // logical dimensions
 
-        // Internal canvas at high density, CSS display at logical size
+        // Internal canvas at high density for download quality
         canvas.width  = W * DPR;
         canvas.height = H * DPR;
-        canvas.style.width  = W + 'px';
-        canvas.style.height = H + 'px';
+
+        // Scale display size so the full result page fits in one viewport
+        const containerEl = document.querySelector('.container');
+        const availW = containerEl ? Math.min(W, containerEl.offsetWidth - 32) : W;
+        // Reserve ~60% of viewport height for the canvas; rest for buttons/share/CTA
+        const availH = Math.round(window.innerHeight * 0.38);
+        const scaleW = availW / W;
+        const scaleH = availH / H;
+        const displayScale = Math.min(scaleW, scaleH, 1);
+        canvas.style.width  = Math.round(W * displayScale) + 'px';
+        canvas.style.height = Math.round(H * displayScale) + 'px';
         canvas.style.maxWidth = '100%';
 
         const ctx = canvas.getContext('2d');
@@ -1202,11 +1266,12 @@
         }
         ctx.restore();
 
-        // ── Tier accent color ──
+        // ── Tier accent color — matches tier thresholds ──
         let accentColor;
-        if (score <= 30)       accentColor = '#00ff88';
-        else if (score <= 60)  accentColor = '#ff8800';
-        else                   accentColor = '#ff3030';
+        if (score <= 25)       accentColor = '#00ff88';        // green — built different
+        else if (score <= 50)  accentColor = '#ffbb00';        // amber — holding ground
+        else if (score <= 75)  accentColor = '#ff8800';        // amber-orange — linkedin
+        else                   accentColor = '#ff3030';        // red — we need to talk
 
         const scoreY = name ? 195 : 185;
 
@@ -1319,25 +1384,44 @@
 
 
     /* ═══════════════════════════════════════════
-       SHARE - X
+       SHARE - X (via /card shareable URL)
     ═══════════════════════════════════════════ */
+
+    // Maps Q5 answer text → URL-friendly slug for the /card page
+    const Q5_SLUG = {
+        "I navigate politics, personalities, and trust - AI can't read a room": "ai-cant-read-your-room",
+        "I make high-stakes calls with incomplete information under pressure":   "you-decide-when-it-matters",
+        "I create genuinely new things - not remixes of what already exists":   "you-build-what-didnt-exist",
+        "Honestly? I'm asking myself that more than I'd like":                  "honest-enough-to-ask"
+    };
+
+    function slugify(str) {
+        return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    }
+
+    function getCardUrl() {
+        const base   = window.location.origin + '/card';
+        const name   = window.userName    || '';
+        const job    = window.userJobTitle || '';
+        const score  = window.userScore;
+        const tier   = slugify(window.userResultLabel || '');
+        const sealed = Q5_SLUG[questionAnswers[5] || ''] || '';
+
+        const params = new URLSearchParams();
+        if (score  !== undefined) params.set('score',  score);
+        if (tier)                 params.set('tier',   tier);
+        if (name)                 params.set('name',   name);
+        if (job)                  params.set('job',    job);
+        if (sealed)               params.set('sealed', sealed);
+
+        return `${base}?${params.toString()}`;
+    }
+
     async function shareTwitter() {
         const score     = window.userScore;
         const label     = window.userResultLabel;
-        const url       = window.location.href;
-        const tweetText = `I just took the AI Replaceability Test and scored ${score}% replaceable. ${label}. Take it yourself 👇 ${url}`;
-
-        const scoreCanvas = document.getElementById('scoreCanvas');
-        if (scoreCanvas && navigator.canShare) {
-            try {
-                const blob = await new Promise(res => scoreCanvas.toBlob(res, 'image/png'));
-                const file = new File([blob], 'my-ai-replaceability-score.png', { type: 'image/png' });
-                if (navigator.canShare({ files: [file] })) {
-                    await navigator.share({ text: tweetText, files: [file] });
-                    return;
-                }
-            } catch (e) { /* fall through to web intent */ }
-        }
+        const cardUrl   = getCardUrl();
+        const tweetText = `I just took the AI Replaceability Test and scored ${score}% replaceable. ${label}. Are you next? 👇 ${cardUrl}`;
 
         window.open(
             `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`,
@@ -1369,6 +1453,9 @@
         Object.keys(questionAnswers).forEach(k => delete questionAnswers[k]);
         window.userScore       = undefined;
         window.userResultLabel = undefined;
+        window.userName        = undefined;
+        window.userJobTitle    = undefined;
+        _pendingScore          = null;
 
         // Switch back to dark background + restart particles
         document.body.classList.remove('results-active');
@@ -1434,6 +1521,7 @@
         })();
 
         document.getElementById('result').classList.remove('active');
+        document.getElementById('nameStep').style.display = 'none';
         document.getElementById('quiz').style.display = 'block';
 
         document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
@@ -1543,8 +1631,8 @@
             }, 850);
         };
 
-        // Phase 1: flash headlines (0 – ~3.9s)
-        // Each slot = 650ms: 150ms fade-in, 300ms hold, 200ms fade-out
+        // Phase 1: headlines — 2s each (300ms fade-in, 1400ms hold, 300ms fade-out)
+        var HEADLINE_DURATION = 2000;
         headlines.forEach(function(text, i) {
             setTimeout(function() {
                 headlineEl.innerHTML =
@@ -1552,34 +1640,34 @@
                     '<span class="intro-headline-text">' + text + '</span>';
                 headlineEl.offsetHeight; // force reflow
                 headlineEl.classList.add('show');
-                setTimeout(function() { headlineEl.classList.remove('show'); }, 450);
-            }, i * 650);
+                setTimeout(function() { headlineEl.classList.remove('show'); }, 1700);
+            }, i * HEADLINE_DURATION);
         });
 
-        // Phase 3: message fades in at 5500ms
+        // After last headline (6 × 2000ms = 12000ms), wait a beat then show message
+        var messageStart = headlines.length * HEADLINE_DURATION + 1200; // 13200ms
+
+        // Phase 3: message fades in
         setTimeout(function() {
             requestAnimationFrame(function() {
                 requestAnimationFrame(function() {
                     messageEl.classList.add('show');
                 });
             });
-            // subtext after 0.5s delay
-            setTimeout(function() {
-                subEl.classList.add('show');
-            }, 500);
-        }, 5500);
+            setTimeout(function() { subEl.classList.add('show'); }, 600);
+        }, messageStart);
 
-        // Phase 4: CTA button fades in at 8000ms
+        // Phase 4: CTA button — 2s after message
         setTimeout(function() {
             requestAnimationFrame(function() {
                 requestAnimationFrame(function() {
                     ctaBtn.classList.add('show');
                 });
             });
-        }, 8000);
+        }, messageStart + 2000);
 
-        // Auto-dismiss at 11s
-        autoTimer = setTimeout(window.dismissIntro, 11000);
+        // Auto-dismiss at messageStart + 5s
+        autoTimer = setTimeout(window.dismissIntro, messageStart + 5000);
     })();
 
 
@@ -1588,6 +1676,14 @@
     ═══════════════════════════════════════════ */
     function handleEnterKey(e) {
         if (e.key !== 'Enter') return;
+        // If the name step is showing, Enter triggers reveal
+        var ns = document.getElementById('nameStep');
+        if (ns && ns.style.display !== 'none') {
+            // Don't fire if focus is on an input (let browser handle newline/submit naturally)
+            if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+            revealScore();
+            return;
+        }
         var activeQ = document.querySelector('.question.active');
         if (!activeQ) return;
         var qNum = parseInt(activeQ.dataset.question, 10);
