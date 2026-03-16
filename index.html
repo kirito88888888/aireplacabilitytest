@@ -275,8 +275,8 @@
 
         /* ── Score Card Canvas ── */
         #scoreCanvas {
-            max-height: 320px;
-            width: auto;
+            max-width: 100%;
+            height: auto;
             border-radius: 20px;
             display: block;
             margin: 28px auto 0;
@@ -1033,14 +1033,22 @@
 
     function drawScoreCard(score, r, name, q5Answer) {
         const canvas = document.getElementById('scoreCanvas');
-        const W = 600, H = 400;
-        canvas.width  = W;
-        canvas.height = H;
+        const DPR = Math.max(window.devicePixelRatio || 1, 2); // at least 2x for crisp output
+        const W = 600, H = 400; // logical dimensions
+
+        // Internal canvas at high density, CSS display at logical size
+        canvas.width  = W * DPR;
+        canvas.height = H * DPR;
+        canvas.style.width  = W + 'px';
+        canvas.style.height = H + 'px';
+        canvas.style.maxWidth = '100%';
+
         const ctx = canvas.getContext('2d');
+        ctx.scale(DPR, DPR); // all coords stay in logical pixels
 
         // Clip to rounded rect
-        ctx.beginPath();
         const rad = 20;
+        ctx.beginPath();
         ctx.moveTo(rad, 0);
         ctx.lineTo(W - rad, 0);
         ctx.quadraticCurveTo(W, 0, W, rad);
@@ -1057,9 +1065,9 @@
         ctx.fillStyle = '#080810';
         ctx.fillRect(0, 0, W, H);
 
-        // ── Grid lines ──
+        // ── Grid lines — opacity 0.04, barely visible structural texture ──
         ctx.save();
-        ctx.globalAlpha = 0.06;
+        ctx.globalAlpha = 0.04;
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 1;
         const gridSize = 40;
@@ -1071,45 +1079,22 @@
         }
         ctx.restore();
 
-        // ── Ghost ticker labels ──
-        ctx.save();
-        ctx.globalAlpha = 0.08;
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '700 48px "Courier New", monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('REPLACEABILITY SCORE', W / 2, 110);
-        ctx.font = '700 32px "Courier New", monospace';
-        ctx.fillText('OPEN CAMPUS ANALYSIS', W / 2, 220);
-        ctx.font = '700 28px "Courier New", monospace';
-        ctx.fillText('AI ASSESSMENT', W / 2, 310);
-        ctx.restore();
-
         // ── Tier accent color ──
         let accentColor;
         if (score <= 30)       accentColor = '#00ff88';
         else if (score <= 60)  accentColor = '#ff8800';
         else                   accentColor = '#ff3030';
 
-        // Glow bar behind score number
-        let scoreY = name ? 190 : 182;
-        const barH = 90;
-        const barGrad = ctx.createLinearGradient(0, scoreY - barH / 2, 0, scoreY + barH / 2);
-        barGrad.addColorStop(0, 'transparent');
-        barGrad.addColorStop(0.5, accentColor + '22');
-        barGrad.addColorStop(1, 'transparent');
-        ctx.fillStyle = barGrad;
-        ctx.fillRect(0, scoreY - barH / 2, W, barH);
+        const scoreY = name ? 195 : 185;
 
-        // Thin horizontal accent line
+        // ── Ghost watermark — single centered text behind percentage, felt as texture ──
         ctx.save();
-        ctx.globalAlpha = 0.35;
-        ctx.strokeStyle = accentColor;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(60, scoreY + 52);
-        ctx.lineTo(W - 60, scoreY + 52);
-        ctx.stroke();
+        ctx.globalAlpha = 0.07;
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 14px "Courier New", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('REPLACEABILITY SCORE', W / 2, scoreY);
         ctx.restore();
 
         ctx.textAlign    = 'center';
@@ -1120,32 +1105,46 @@
         ctx.fillStyle = '#505070';
         ctx.fillText('OPEN CAMPUS — AI REPLACEABILITY TEST', W / 2, 28);
 
-        // ── Name (if provided) ──
+        // ── Name — 18px monospace bold white, second most prominent ──
         if (name) {
-            ctx.font      = '600 16px "Poppins", sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.85)';
-            ctx.fillText(name, W / 2, 62);
+            ctx.font      = '700 18px "Courier New", monospace';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(name, W / 2, 58);
         }
 
-        // ── Score % — dominant element ──
-        ctx.font      = '800 108px "Poppins", sans-serif';
+        // ── Score % — dominant element, 120px ──
+        ctx.font      = '800 120px "Poppins", sans-serif';
         ctx.fillStyle = '#ffffff';
         ctx.fillText(score + '%', W / 2, scoreY);
+
+        // ── Thin accent glow line — 2-3px with soft outward glow ──
+        const lineY = scoreY + 68;
+        ctx.save();
+        ctx.strokeStyle = accentColor;
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = accentColor;
+        ctx.shadowBlur = 14;
+        ctx.globalAlpha = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(W * 0.12, lineY);
+        ctx.lineTo(W * 0.88, lineY);
+        ctx.stroke();
+        ctx.restore();
 
         // ── REPLACEABILITY label ──
         ctx.font      = '600 11px "Courier New", monospace';
         ctx.fillStyle = '#a0a0b0';
-        ctx.fillText('REPLACEABILITY', W / 2, scoreY + 60);
+        ctx.fillText('REPLACEABILITY', W / 2, lineY + 17);
 
         // ── Tier headline ──
         ctx.font      = '700 20px "Poppins", sans-serif';
         ctx.fillStyle = '#ffffff';
-        ctx.fillText(r.label, W / 2, scoreY + 90);
+        ctx.fillText(r.label, W / 2, lineY + 40);
 
         // ── Better than ──
         ctx.font      = '500 13px "Poppins", sans-serif';
         ctx.fillStyle = '#a0a0b0';
-        ctx.fillText('Better than ' + r.betterThan + '% of people who took this test', W / 2, scoreY + 118);
+        ctx.fillText('Better than ' + r.betterThan + '% of people who took this test', W / 2, lineY + 64);
 
         // ── Sealed by (Q5 mapping) ──
         const Q5_MAP = {
@@ -1158,7 +1157,7 @@
         if (sealedText) {
             ctx.font      = 'italic 500 12px "Poppins", sans-serif';
             ctx.fillStyle = '#7070a0';
-            ctx.fillText(sealedText, W / 2, scoreY + 148);
+            ctx.fillText(sealedText, W / 2, lineY + 88);
         }
 
         // ── Card border ──
