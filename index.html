@@ -771,11 +771,21 @@
             <!-- Optional name field -->
             <div class="name-field">
                 <label class="name-field-label" for="nameInput">
-                    What should we call you? <span class="optional">(optional)</span>
+                    What should we call you?
                 </label>
                 <input type="text" id="nameInput" class="name-input"
                        placeholder="Your name or @handle"
                        autocomplete="off" maxlength="30">
+            </div>
+
+            <!-- Job title field -->
+            <div class="name-field">
+                <label class="name-field-label" for="jobInput">
+                    What is your current job?
+                </label>
+                <input type="text" id="jobInput" class="name-input"
+                       placeholder="e.g. Marketing Manager, Software Engineer"
+                       autocomplete="off" maxlength="60">
             </div>
 
             <div class="progress-bar">
@@ -1140,6 +1150,7 @@
 
         const r = getResult(score);
         const name = document.getElementById('nameInput').value.trim();
+        const jobTitle = document.getElementById('jobInput').value.trim();
         const q5Answer = questionAnswers[5] || '';
 
         document.getElementById('resultDescription').textContent = r.description;
@@ -1148,13 +1159,13 @@
         window.userResultLabel = r.label;
 
         // Draw score card canvas (wait for fonts to be ready)
-        document.fonts.ready.then(() => drawScoreCard(score, r, name, q5Answer));
+        document.fonts.ready.then(() => drawScoreCard(score, r, name, q5Answer, jobTitle));
 
         // Submit to Google Sheets (fire-and-forget)
         submitToSheets(score, r.label, name, questionAnswers);
     }
 
-    function drawScoreCard(score, r, name, q5Answer) {
+    function drawScoreCard(score, r, name, q5Answer, jobTitle) {
         const canvas = document.getElementById('scoreCanvas');
         const DPR = Math.max(window.devicePixelRatio || 1, 2); // at least 2x for crisp output
         const W = 600, H = 400; // logical dimensions
@@ -1233,6 +1244,13 @@
             ctx.font      = '700 18px "Courier New", monospace';
             ctx.fillStyle = '#ffffff';
             ctx.fillText(name, W / 2, 58);
+        }
+
+        // ── Job title — 13px monospace normal, below name ──
+        if (jobTitle) {
+            ctx.font      = '400 13px "Courier New", monospace';
+            ctx.fillStyle = '#a0a0b0';
+            ctx.fillText(jobTitle, W / 2, 80);
         }
 
         // ── Score % — dominant element, 120px ──
@@ -1437,6 +1455,7 @@
 
         document.getElementById('progressBar').style.width = '20%';
         document.getElementById('nameInput').value = '';
+        document.getElementById('jobInput').value = '';
 
         // Re-enable Enter key navigation for the restarted quiz
         document.removeEventListener('keydown', handleEnterKey);
