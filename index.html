@@ -946,11 +946,43 @@
 
 
     /* ═══════════════════════════════════════════
+       GOOGLE SHEETS ENDPOINT
+       Paste your Apps Script Web App URL here
+       (see google-apps-script.js for setup instructions)
+    ═══════════════════════════════════════════ */
+    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz-OyyXOBYTMk-7mJLUlzi4cM-Eg-P0y0TA5YtvJm4a1AdFOJk4PpQBHxtt7H3T3QyP/exec';
+
+    async function submitToSheets(score, resultLabel, name, answers) {
+        if (!GOOGLE_SHEETS_URL || GOOGLE_SHEETS_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+        const payload = {
+            timestamp: new Date().toISOString(),
+            name:      name || '(anonymous)',
+            score:     score,
+            result:    resultLabel,
+            q1: answers[1] || '',
+            q2: answers[2] || '',
+            q3: answers[3] || '',
+            q4: answers[4] || '',
+            q5: answers[5] || ''
+        };
+        try {
+            await fetch(GOOGLE_SHEETS_URL, {
+                method:  'POST',
+                mode:    'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(payload)
+            });
+        } catch (e) { /* silently fail — never disrupt the user experience */ }
+    }
+
+
+    /* ═══════════════════════════════════════════
        QUIZ LOGIC
     ═══════════════════════════════════════════ */
     let currentQuestion = 1;
     const totalQuestions = 5;
-    const questionScores = {};
+    const questionScores  = {};
+    const questionAnswers = {};
 
     document.getElementById('progressBar').style.width = '20%';
 
@@ -958,7 +990,8 @@
         el.closest('.question').querySelectorAll('.option')
           .forEach(o => o.classList.remove('selected'));
         el.classList.add('selected');
-        questionScores[questionNum] = parseInt(el.dataset.score, 10);
+        questionScores[questionNum]  = parseInt(el.dataset.score, 10);
+        questionAnswers[questionNum] = el.textContent.trim();
         document.getElementById('btn' + questionNum).disabled = false;
     }
 
@@ -1071,6 +1104,10 @@
 
         window.userScore       = score;
         window.userResultLabel = r.label;
+
+        // Submit to Google Sheets (fire-and-forget)
+        const name = document.getElementById('nameInput').value.trim();
+        submitToSheets(score, r.label, name, questionAnswers);
     }
 
 
@@ -1173,6 +1210,7 @@
     function retryQuiz() {
         currentQuestion = 1;
         Object.keys(questionScores).forEach(k => delete questionScores[k]);
+        Object.keys(questionAnswers).forEach(k => delete questionAnswers[k]);
         window.userScore       = undefined;
         window.userResultLabel = undefined;
 
