@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+        SERVER-SIDE OG IMAGE ENDPOINT (TODO when Vercel is configured):
+        ─────────────────────────────────────────────────────────────────
+        Add a serverless function at /api/og-image (e.g. api/og-image.js)
+        that reads the same URL params (score, tier, name, job, sealed),
+        renders the score card using @vercel/og or Satori + Resvg,
+        and returns a PNG with Content-Type: image/png.
+
+        Then update the og:image meta tag below to:
+            <meta property="og:image"
+                  content="https://areyoureplaceable.xyz/api/og-image?[params]">
+
+        Until then, og:image points to a static fallback card.
+    -->
+
+    <!-- Dynamic OG tags — values filled by JS after page load for client-side use.
+         For actual crawler/preview support, replace with a server-side render. -->
+    <meta property="og:type"        content="website">
+    <meta property="og:site_name"   content="AI Replaceability Test | Open Campus">
+    <meta property="og:image"       content="https://areyoureplaceable.xyz/og-default.png">
+    <meta name="twitter:card"       content="summary_large_image">
+    <meta name="twitter:image"      content="https://areyoureplaceable.xyz/og-default.png">
+
+    <!-- These are set dynamically below via JS (for client-side social shares) -->
+    <title>AI Replaceability Test | Score Card</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #080810;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        #scoreCanvas {
+            display: block;
+            border-radius: 20px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        #loading {
+            color: rgba(255,255,255,0.4);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            letter-spacing: 0.1em;
+        }
+
+        #cta {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .cta-link {
+            background: #141beb;
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .cta-link.ghost {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.25);
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            padding: 11px 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading">Loading score card...</div>
+    <canvas id="scoreCanvas" style="display:none;"></canvas>
+
+    <div id="cta" style="display:none;">
+        <a href="/" class="cta-link">Take the Test →</a>
+        <a href="/" class="cta-link ghost">areyoureplaceable.xyz</a>
+    </div>
+
+    <script>
+    /* ─────────────────────────────────────────────────────
+       /card  — renders a score card from URL params.
+       Params: score, tier, name, job, sealed
+
+       This page is designed to be:
+         1. Shared as a link (og:image preview from server-side endpoint)
+         2. Rendered visually when opened directly
+    ───────────────────────────────────────────────────── */
+
+    // Tier slug → display data
+    const TIER_DATA = {
+        'you-re-built-different':                     { label: "You're Built Different",                   betterThan: 89 },
+        'you-re-holding-your-ground':                 { label: "You're Holding Your Ground",               betterThan: 65 },
+        'your-linkedin-is-about-to-get-interesting':  { label: "Your LinkedIn Is About To Get Interesting", betterThan: 35 },
+        'we-need-to-talk':                            { label: "We Need To Talk",                          betterThan: 8  }
+    };
+
+    // Sealed slug → display text
+    const SEALED_DATA = {
+        'ai-cant-read-your-room':    "Sealed by: AI can't read the room you own",
+        'you-decide-when-it-matters': "Sealed by: You decide when it matters most",
+        'you-build-what-didnt-exist': "Sealed by: You build what didn't exist yet",
+        'honest-enough-to-ask':      "Sealed by: Honest enough to ask the hard question"
+    };
+
+    function getParam(name) {
+        return new URLSearchParams(window.location.search).get(name) || '';
+    }
+
+    var score    = parseInt(getParam('score'), 10) || 0;
+    var tierSlug = getParam('tier');
+    var name     = getParam('name');
+    var job      = getParam('job');
+    var sealed   = getParam('sealed');
+
+    var tierInfo   = TIER_DATA[tierSlug] || { label: '', betterThan: 0 };
+    var sealedText = SEALED_DATA[sealed] || '';
+
+    // Update page title + OG meta for client-side shares
+    document.title = 'I scored ' + score + '% on the AI Replaceability Test';
+    var setMeta = function(prop, val) {
+        var el = document.querySelector('meta[property="' + prop + '"], meta[name="' + prop + '"]');
+        if (el) el.setAttribute('content', val);
+    };
+    setMeta('og:title',       'I scored ' + score + '% on the AI Replaceability Test');
+    setMeta('og:description', tierInfo.label + ' — areyoureplaceable.xyz');
+    setMeta('twitter:title',  'I scored ' + score + '% on the AI Replaceability Test');
+    setMeta('twitter:description', tierInfo.label + ' — areyoureplaceable.xyz');
+
+    function drawCard() {
+        var canvas = document.getElementById('scoreCanvas');
+        var DPR = Math.max(window.devicePixelRatio || 1, 2);
+        var W = 600, H = 400;
+
+        canvas.width  = W * DPR;
+        canvas.height = H * DPR;
+
+        // Display size — fit within viewport
+        var displayW = Math.min(W, window.innerWidth - 32);
+        var displayH = Math.round(displayW * (H / W));
+        canvas.style.width  = displayW + 'px';
+        canvas.style.height = displayH + 'px';
+
+        var ctx = canvas.getContext('2d');
+        ctx.scale(DPR, DPR);
+
+        // Rounded clip
+        var rad = 20;
+        ctx.beginPath();
+        ctx.moveTo(rad, 0); ctx.lineTo(W - rad, 0); ctx.quadraticCurveTo(W, 0, W, rad);
+        ctx.lineTo(W, H - rad); ctx.quadraticCurveTo(W, H, W - rad, H);
+        ctx.lineTo(rad, H); ctx.quadraticCurveTo(0, H, 0, H - rad);
+        ctx.lineTo(0, rad); ctx.quadraticCurveTo(0, 0, rad, 0);
+        ctx.closePath();
+        ctx.clip();
+
+        // Background
+        ctx.fillStyle = '#080810';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid texture
+        ctx.save();
+        ctx.globalAlpha = 0.04;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        var gs = 40;
+        for (var x = 0; x <= W; x += gs) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+        for (var y = 0; y <= H; y += gs) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+        ctx.restore();
+
+        // Accent color
+        var accentColor;
+        if      (score <= 25) accentColor = '#00ff88';
+        else if (score <= 50) accentColor = '#ffbb00';
+        else if (score <= 75) accentColor = '#ff8800';
+        else                  accentColor = '#ff3030';
+
+        var scoreY = name ? 195 : 185;
+
+        // Ghost watermark
+        ctx.save();
+        ctx.globalAlpha = 0.07;
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 14px "Courier New", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('REPLACEABILITY SCORE', W / 2, scoreY);
+        ctx.restore();
+
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Brand label
+        ctx.font      = '700 10px "Courier New", monospace';
+        ctx.fillStyle = '#505070';
+        ctx.fillText('OPEN CAMPUS — AI REPLACEABILITY TEST', W / 2, 28);
+
+        // Name
+        if (name) {
+            ctx.font      = '700 18px "Courier New", monospace';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(name, W / 2, 58);
+        }
+
+        // Job
+        if (job) {
+            ctx.font      = '400 13px "Courier New", monospace';
+            ctx.fillStyle = '#a0a0b0';
+            ctx.fillText(job, W / 2, 80);
+        }
+
+        // Score %
+        ctx.font      = '800 120px "Poppins", sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(score + '%', W / 2, scoreY);
+
+        // Accent line
+        var lineY = scoreY + 68;
+        ctx.save();
+        ctx.strokeStyle = accentColor;
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = accentColor;
+        ctx.shadowBlur = 14;
+        ctx.globalAlpha = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(W * 0.12, lineY);
+        ctx.lineTo(W * 0.88, lineY);
+        ctx.stroke();
+        ctx.restore();
+
+        // REPLACEABILITY label
+        ctx.font      = '600 11px "Courier New", monospace';
+        ctx.fillStyle = '#a0a0b0';
+        ctx.fillText('REPLACEABILITY', W / 2, lineY + 17);
+
+        // Tier headline
+        ctx.font      = '700 20px "Poppins", sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(tierInfo.label, W / 2, lineY + 40);
+
+        // Better than
+        if (tierInfo.betterThan) {
+            ctx.font      = '500 13px "Poppins", sans-serif';
+            ctx.fillStyle = '#a0a0b0';
+            ctx.fillText('Better than ' + tierInfo.betterThan + '% of people who took this test', W / 2, lineY + 64);
+        }
+
+        // Sealed by
+        if (sealedText) {
+            ctx.font      = 'italic 500 12px "Poppins", sans-serif';
+            ctx.fillStyle = '#7070a0';
+            ctx.fillText(sealedText, W / 2, lineY + 88);
+        }
+
+        // Card border
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(rad, 0); ctx.lineTo(W - rad, 0); ctx.quadraticCurveTo(W, 0, W, rad);
+        ctx.lineTo(W, H - rad); ctx.quadraticCurveTo(W, H, W - rad, H);
+        ctx.lineTo(rad, H); ctx.quadraticCurveTo(0, H, 0, H - rad);
+        ctx.lineTo(0, rad); ctx.quadraticCurveTo(0, 0, rad, 0);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+
+        // Show canvas, hide loading
+        document.getElementById('loading').style.display = 'none';
+        canvas.style.display = 'block';
+        document.getElementById('cta').style.display = 'flex';
+    }
+
+    document.fonts.ready.then(drawCard);
+    </script>
+</body>
+</html>
