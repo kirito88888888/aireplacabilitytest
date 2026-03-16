@@ -275,17 +275,18 @@
 
         /* ── Score Card Canvas ── */
         #scoreCanvas {
-            width: 100%;
+            max-height: 320px;
+            width: auto;
             border-radius: 20px;
             display: block;
-            margin: 28px 0 0;
+            margin: 28px auto 0;
         }
 
         /* ── Download Card Button ── */
         .download-btn {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #e0e0f0;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
             padding: 13px 22px;
             border-radius: 10px;
             font-size: 14px;
@@ -479,16 +480,17 @@
 
         /* ── Retry ── */
         .retry-btn {
-            background: transparent;
-            border: 2px solid var(--blue);
-            color: var(--blue);
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
             margin-top: 0;
             font-family: 'Poppins', sans-serif;
         }
 
-        .retry-btn:hover {
-            background: var(--blue);
-            color: var(--white);
+        .retry-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.12);
+            transform: none;
+            box-shadow: none;
         }
 
         /* ── Fixed Top-Left Logo ── */
@@ -1051,75 +1053,101 @@
         ctx.closePath();
         ctx.clip();
 
-        // Background gradient based on score tier
-        let c1, c2;
-        if (score <= 30) {
-            c1 = '#0a3d2e'; c2 = '#1a6b52';   // deep green
-        } else if (score <= 60) {
-            c1 = '#5c2800'; c2 = '#a34f08';   // amber/orange
-        } else {
-            c1 = '#3d0a0a'; c2 = '#7a1515';   // deep red
-        }
-        const grad = ctx.createLinearGradient(0, 0, W, H);
-        grad.addColorStop(0, c1);
-        grad.addColorStop(1, c2);
-        ctx.fillStyle = grad;
+        // ── Base dark background ──
+        ctx.fillStyle = '#080810';
         ctx.fillRect(0, 0, W, H);
 
-        // Decorative circles
+        // ── Grid lines ──
         ctx.save();
         ctx.globalAlpha = 0.06;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        const gridSize = 40;
+        for (let x = 0; x <= W; x += gridSize) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+        for (let y = 0; y <= H; y += gridSize) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+        ctx.restore();
+
+        // ── Ghost ticker labels ──
+        ctx.save();
+        ctx.globalAlpha = 0.08;
         ctx.fillStyle = '#ffffff';
+        ctx.font = '700 48px "Courier New", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('REPLACEABILITY SCORE', W / 2, 110);
+        ctx.font = '700 32px "Courier New", monospace';
+        ctx.fillText('OPEN CAMPUS ANALYSIS', W / 2, 220);
+        ctx.font = '700 28px "Courier New", monospace';
+        ctx.fillText('AI ASSESSMENT', W / 2, 310);
+        ctx.restore();
+
+        // ── Tier accent color ──
+        let accentColor;
+        if (score <= 30)       accentColor = '#00ff88';
+        else if (score <= 60)  accentColor = '#ff8800';
+        else                   accentColor = '#ff3030';
+
+        // Glow bar behind score number
+        let scoreY = name ? 190 : 182;
+        const barH = 90;
+        const barGrad = ctx.createLinearGradient(0, scoreY - barH / 2, 0, scoreY + barH / 2);
+        barGrad.addColorStop(0, 'transparent');
+        barGrad.addColorStop(0.5, accentColor + '22');
+        barGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = barGrad;
+        ctx.fillRect(0, scoreY - barH / 2, W, barH);
+
+        // Thin horizontal accent line
+        ctx.save();
+        ctx.globalAlpha = 0.35;
+        ctx.strokeStyle = accentColor;
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(W - 50, -30, 150, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(-30, H + 30, 160, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(60, scoreY + 52);
+        ctx.lineTo(W - 60, scoreY + 52);
+        ctx.stroke();
         ctx.restore();
 
         ctx.textAlign    = 'center';
         ctx.textBaseline = 'middle';
 
-        // Brand label
-        ctx.font        = '700 10px "Poppins", sans-serif';
-        ctx.fillStyle   = 'rgba(255,255,255,0.55)';
-        ctx.letterSpacing = '2px';
-        ctx.fillText('OPEN CAMPUS  ·  AI REPLACEABILITY TEST', W / 2, 32);
-        ctx.letterSpacing = '0px';
+        // ── Brand label (top) ──
+        ctx.font      = '700 10px "Courier New", monospace';
+        ctx.fillStyle = '#505070';
+        ctx.fillText('OPEN CAMPUS — AI REPLACEABILITY TEST', W / 2, 28);
 
-        // Name (if provided)
-        let scoreY = 182;
+        // ── Name (if provided) ──
         if (name) {
-            ctx.font      = '600 17px "Poppins", sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.9)';
-            ctx.fillText(name, W / 2, 66);
-            scoreY = 190;
+            ctx.font      = '600 16px "Poppins", sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            ctx.fillText(name, W / 2, 62);
         }
 
-        // Score % - dominant element
+        // ── Score % — dominant element ──
         ctx.font      = '800 108px "Poppins", sans-serif';
         ctx.fillStyle = '#ffffff';
         ctx.fillText(score + '%', W / 2, scoreY);
 
-        // REPLACEABILITY label
-        ctx.font          = '600 11px "Poppins", sans-serif';
-        ctx.fillStyle     = 'rgba(255,255,255,0.55)';
-        ctx.letterSpacing = '2px';
+        // ── REPLACEABILITY label ──
+        ctx.font      = '600 11px "Courier New", monospace';
+        ctx.fillStyle = '#a0a0b0';
         ctx.fillText('REPLACEABILITY', W / 2, scoreY + 60);
-        ctx.letterSpacing = '0px';
 
-        // Tier headline
-        ctx.font      = '700 22px "Poppins", sans-serif';
+        // ── Tier headline ──
+        ctx.font      = '700 20px "Poppins", sans-serif';
         ctx.fillStyle = '#ffffff';
-        ctx.fillText(r.label, W / 2, scoreY + 96);
+        ctx.fillText(r.label, W / 2, scoreY + 90);
 
-        // Better than
+        // ── Better than ──
         ctx.font      = '500 13px "Poppins", sans-serif';
-        ctx.fillStyle = 'rgba(255,255,255,0.72)';
-        ctx.fillText('Better than ' + r.betterThan + '% of people who took this test', W / 2, scoreY + 128);
+        ctx.fillStyle = '#a0a0b0';
+        ctx.fillText('Better than ' + r.betterThan + '% of people who took this test', W / 2, scoreY + 118);
 
-        // Sealed by (Q5 mapping)
+        // ── Sealed by (Q5 mapping) ──
         const Q5_MAP = {
             "I navigate politics, personalities, and trust - AI can't read a room": "Sealed by: AI can't read the room you own",
             "I make high-stakes calls with incomplete information under pressure":   "Sealed by: You decide when it matters most",
@@ -1129,9 +1157,27 @@
         const sealedText = Q5_MAP[q5Answer];
         if (sealedText) {
             ctx.font      = 'italic 500 12px "Poppins", sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.62)';
-            ctx.fillText(sealedText, W / 2, scoreY + 160);
+            ctx.fillStyle = '#7070a0';
+            ctx.fillText(sealedText, W / 2, scoreY + 148);
         }
+
+        // ── Card border ──
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(rad, 0);
+        ctx.lineTo(W - rad, 0);
+        ctx.quadraticCurveTo(W, 0, W, rad);
+        ctx.lineTo(W, H - rad);
+        ctx.quadraticCurveTo(W, H, W - rad, H);
+        ctx.lineTo(rad, H);
+        ctx.quadraticCurveTo(0, H, 0, H - rad);
+        ctx.lineTo(0, rad);
+        ctx.quadraticCurveTo(0, 0, rad, 0);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
     }
 
     function downloadCard() {
