@@ -626,9 +626,129 @@
             from { transform: translateX(0); }
             to   { transform: translateX(-50%); }
         }
+
+        /* ── Intro Splash ── */
+        #introSplash {
+            position: fixed;
+            inset: 0;
+            background: #080810;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+        #introSplash.fading {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .intro-skip {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.35);
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            letter-spacing: 0.05em;
+            padding: 6px 10px;
+            transition: color 0.2s;
+        }
+        .intro-skip:hover { color: rgba(255,255,255,0.75); }
+        .intro-headline {
+            position: absolute;
+            width: 100%;
+            max-width: 820px;
+            padding: 0 48px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            pointer-events: none;
+        }
+        .intro-headline.show { opacity: 1; }
+        .intro-breaking {
+            display: block;
+            color: #e82020;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            margin-bottom: 14px;
+        }
+        .intro-headline-text {
+            display: block;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(17px, 2.6vw, 26px);
+            line-height: 1.45;
+            font-weight: 400;
+        }
+        .intro-message {
+            position: absolute;
+            width: 100%;
+            max-width: 700px;
+            padding: 0 40px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+        .intro-message.show { opacity: 1; pointer-events: auto; }
+        .intro-message-title {
+            color: #ffffff;
+            font-size: clamp(28px, 5.5vw, 52px);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 18px;
+        }
+        .intro-message-sub {
+            color: rgba(255,255,255,0.6);
+            font-size: clamp(15px, 2.1vw, 20px);
+            font-weight: 400;
+            margin-bottom: 40px;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        .intro-message-sub.show { opacity: 1; }
+        .intro-cta {
+            display: inline-block;
+            background: none;
+            border: 2px solid #00edbe;
+            color: #00edbe;
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 14px 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.15s ease;
+        }
+        .intro-cta.show {
+            opacity: 1;
+            animation: introPulse 1.8s ease-in-out infinite;
+        }
+        .intro-cta:hover { transform: scale(1.04); }
+        @keyframes introPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,237,190,0.5); }
+            50%       { box-shadow: 0 0 0 10px rgba(0,237,190,0); }
+        }
     </style>
 </head>
 <body>
+    <!-- Intro Splash -->
+    <div id="introSplash" role="region" aria-label="Intro">
+        <button class="intro-skip" onclick="dismissIntro()">Skip →</button>
+        <div id="introHeadline" class="intro-headline" aria-live="polite"></div>
+        <div id="introMessage" class="intro-message">
+            <div class="intro-message-title">How replaceable are you?</div>
+            <div class="intro-message-sub" id="introSub">5 questions. Brutal honesty. Find out now.</div>
+            <button id="introBtn" class="intro-cta" onclick="dismissIntro()">Take the Test →</button>
+        </div>
+    </div>
+
     <!-- Terminal background -->
     <div id="terminalBg" aria-hidden="true">
         <div class="terminal-grid"></div>
@@ -645,7 +765,7 @@
 
         <!-- ── QUIZ ── -->
         <div id="quiz">
-            <h1>🤖 AI Replaceability Test</h1>
+            <h1>AI Replaceability Test</h1>
             <p class="subtitle">Answer 5 quick questions to discover your replaceability score</p>
 
             <!-- Optional name field -->
@@ -1008,6 +1128,9 @@
     function showResult(score) {
         document.getElementById('progressBar').style.width = '100%';
 
+        // Remove Enter key listener — quiz is complete
+        document.removeEventListener('keydown', handleEnterKey);
+
         // Switch to light background, stop particles
         document.body.classList.add('results-active');
         window.stopParticles();
@@ -1315,6 +1438,10 @@
         document.getElementById('progressBar').style.width = '20%';
         document.getElementById('nameInput').value = '';
 
+        // Re-enable Enter key navigation for the restarted quiz
+        document.removeEventListener('keydown', handleEnterKey);
+        document.addEventListener('keydown', handleEnterKey);
+
         // Clear score card canvas
         const scoreCanvas = document.getElementById('scoreCanvas');
         const canvasCtx   = scoreCanvas.getContext('2d');
@@ -1374,6 +1501,92 @@
         }
         setTimeout(scheduleFlash, 1200);
     })();
+
+
+    /* ═══════════════════════════════════════════
+       INTRO SPLASH
+    ═══════════════════════════════════════════ */
+    (function() {
+        var headlines = [
+            "Goldman Sachs replaces 600 junior analysts with AI systems",
+            "IBM halts hiring for 7,800 roles \u2014 AI to take over",
+            "McKinsey: 30% of white-collar tasks automated by 2026",
+            "Klarna AI handles work of 700 customer service agents",
+            "Microsoft lays off entire UX research team, cites AI tools",
+            "Google cuts 12,000 roles as AI handles core ad operations"
+        ];
+
+        var splash     = document.getElementById('introSplash');
+        var headlineEl = document.getElementById('introHeadline');
+        var messageEl  = document.getElementById('introMessage');
+        var subEl      = document.getElementById('introSub');
+        var ctaBtn     = document.getElementById('introBtn');
+
+        var dismissed = false;
+        var autoTimer;
+
+        window.dismissIntro = function() {
+            if (dismissed) return;
+            dismissed = true;
+            clearTimeout(autoTimer);
+            splash.classList.add('fading');
+            setTimeout(function() {
+                if (splash.parentNode) splash.parentNode.removeChild(splash);
+            }, 850);
+        };
+
+        // Phase 1: flash headlines (0 – ~3.9s)
+        // Each slot = 650ms: 150ms fade-in, 300ms hold, 200ms fade-out
+        headlines.forEach(function(text, i) {
+            setTimeout(function() {
+                headlineEl.innerHTML =
+                    '<span class="intro-breaking">\u25a0 BREAKING</span>' +
+                    '<span class="intro-headline-text">' + text + '</span>';
+                headlineEl.offsetHeight; // force reflow
+                headlineEl.classList.add('show');
+                setTimeout(function() { headlineEl.classList.remove('show'); }, 450);
+            }, i * 650);
+        });
+
+        // Phase 3: message fades in at 5500ms
+        setTimeout(function() {
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    messageEl.classList.add('show');
+                });
+            });
+            // subtext after 0.5s delay
+            setTimeout(function() {
+                subEl.classList.add('show');
+            }, 500);
+        }, 5500);
+
+        // Phase 4: CTA button fades in at 8000ms
+        setTimeout(function() {
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    ctaBtn.classList.add('show');
+                });
+            });
+        }, 8000);
+
+        // Auto-dismiss at 11s
+        autoTimer = setTimeout(window.dismissIntro, 11000);
+    })();
+
+
+    /* ═══════════════════════════════════════════
+       ENTER KEY TO ADVANCE QUIZ
+    ═══════════════════════════════════════════ */
+    function handleEnterKey(e) {
+        if (e.key !== 'Enter') return;
+        var activeQ = document.querySelector('.question.active');
+        if (!activeQ) return;
+        var qNum = parseInt(activeQ.dataset.question, 10);
+        var btn = document.getElementById('btn' + qNum);
+        if (btn && !btn.disabled) btn.click();
+    }
+    document.addEventListener('keydown', handleEnterKey);
     </script>
 </body>
 </html>
