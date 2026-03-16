@@ -684,12 +684,12 @@
                 <!-- Q1 -->
                 <div class="question active" data-question="1">
                     <div class="question-number">Question 1 of 5</div>
-                    <label class="question-label">How much of your day involves repetitive tasks?</label>
+                    <label class="question-label">If you described your job to ChatGPT right now and told it to do it, what would happen?</label>
                     <div class="options">
-                        <div class="option" data-score="0" onclick="selectOption(this,1)">Almost never — every day looks different</div>
-                        <div class="option" data-score="1" onclick="selectOption(this,1)">Sometimes — maybe 25% of my work</div>
-                        <div class="option" data-score="2" onclick="selectOption(this,1)">Most of it — I could probably write a manual</div>
-                        <div class="option" data-score="3" onclick="selectOption(this,1)">Almost all of it — it's basically a script</div>
+                        <div class="option" data-score="0" onclick="selectOption(this,1)">It would hallucinate and embarrass itself</div>
+                        <div class="option" data-score="1" onclick="selectOption(this,1)">It could handle maybe 20% of it, the easy stuff</div>
+                        <div class="option" data-score="2" onclick="selectOption(this,1)">Honestly it would do a pretty decent job</div>
+                        <div class="option" data-score="3" onclick="selectOption(this,1)">It's basically already doing half of it</div>
                     </div>
                     <button type="button" class="btn" id="btn1" onclick="nextQuestion(1)" disabled>Next →</button>
                 </div>
@@ -697,12 +697,12 @@
                 <!-- Q2 -->
                 <div class="question" data-question="2">
                     <div class="question-number">Question 2 of 5</div>
-                    <label class="question-label">Has AI already done something you used to get paid for?</label>
+                    <label class="question-label">A junior person with zero experience but great AI prompting joins your team. How threatened are you?</label>
                     <div class="options">
-                        <div class="option" data-score="0" onclick="selectOption(this,2)">No way, my work is too complex</div>
-                        <div class="option" data-score="1" onclick="selectOption(this,2)">Not yet, but I can see it coming</div>
-                        <div class="option" data-score="2" onclick="selectOption(this,2)">Honestly, parts of it yes</div>
-                        <div class="option" data-score="3" onclick="selectOption(this,2)">I don't want to answer this</div>
+                        <div class="option" data-score="0" onclick="selectOption(this,2)">Not at all - my value is in things they can't prompt their way into</div>
+                        <div class="option" data-score="1" onclick="selectOption(this,2)">Mildly - they'd be useful but nowhere near my level yet</div>
+                        <div class="option" data-score="2" onclick="selectOption(this,2)">More than I'd like to admit</div>
+                        <div class="option" data-score="3" onclick="selectOption(this,2)">I've already seen this happen and it wasn't comfortable</div>
                     </div>
                     <button type="button" class="btn" id="btn2" onclick="nextQuestion(2)" disabled>Next →</button>
                 </div>
@@ -710,12 +710,12 @@
                 <!-- Q3 -->
                 <div class="question" data-question="3">
                     <div class="question-number">Question 3 of 5</div>
-                    <label class="question-label">How often do you use AI tools in your work?</label>
+                    <label class="question-label">When you use AI at work, what actually happens?</label>
                     <div class="options">
-                        <div class="option" data-score="2" onclick="selectOption(this,3)">Never — I don't trust it</div>
-                        <div class="option" data-score="1" onclick="selectOption(this,3)">Occasionally — when I remember to</div>
-                        <div class="option" data-score="0" onclick="selectOption(this,3)">Daily — it's part of my workflow</div>
-                        <div class="option" data-score="3" onclick="selectOption(this,3)">I basically am an AI at this point</div>
+                        <div class="option" data-score="2" onclick="selectOption(this,3)">I don't really use it - haven't found it useful</div>
+                        <div class="option" data-score="1" onclick="selectOption(this,3)">I use it for low-stakes stuff, wouldn't trust it with anything real</div>
+                        <div class="option" data-score="0" onclick="selectOption(this,3)">It handles the grunt work, I handle everything that actually matters</div>
+                        <div class="option" data-score="3" onclick="selectOption(this,3)">I've basically built a version of my job around it</div>
                     </div>
                     <button type="button" class="btn" id="btn3" onclick="nextQuestion(3)" disabled>Next →</button>
                 </div>
@@ -723,12 +723,12 @@
                 <!-- Q4 -->
                 <div class="question" data-question="4">
                     <div class="question-number">Question 4 of 5</div>
-                    <label class="question-label">Could someone follow a script to do your job?</label>
+                    <label class="question-label">Your company loses access to you for 3 months. What breaks?</label>
                     <div class="options">
-                        <div class="option" data-score="0" onclick="selectOption(this,4)">Absolutely not</div>
-                        <div class="option" data-score="1" onclick="selectOption(this,4)">Maybe for some parts</div>
-                        <div class="option" data-score="2" onclick="selectOption(this,4)">A good chunk of it, yes</div>
-                        <div class="option" data-score="3" onclick="selectOption(this,4)">Pretty much the whole thing</div>
+                        <div class="option" data-score="0" onclick="selectOption(this,4)">Nothing major - someone could pick it up with a handover doc</div>
+                        <div class="option" data-score="1" onclick="selectOption(this,4)">Some things slow down but the machine keeps running</div>
+                        <div class="option" data-score="2" onclick="selectOption(this,4)">Key relationships and judgment calls stall - it's not transferable</div>
+                        <div class="option" data-score="3" onclick="selectOption(this,4)">The whole thing falls apart, I'm load-bearing infrastructure</div>
                     </div>
                     <button type="button" class="btn" id="btn4" onclick="nextQuestion(4)" disabled>Next →</button>
                 </div>
@@ -736,12 +736,12 @@
                 <!-- Q5 -->
                 <div class="question" data-question="5">
                     <div class="question-number">Question 5 of 5</div>
-                    <label class="question-label">What's your biggest advantage over AI at work?</label>
+                    <label class="question-label">What's the real reason you still have your job and AI doesn't?</label>
                     <div class="options">
-                        <div class="option" data-score="0" onclick="selectOption(this,5)">I build relationships and trust</div>
-                        <div class="option" data-score="0" onclick="selectOption(this,5)">I make judgment calls under pressure</div>
-                        <div class="option" data-score="0" onclick="selectOption(this,5)">I create things that have never existed</div>
-                        <div class="option" data-score="3" onclick="selectOption(this,5)">I'm not sure anymore</div>
+                        <div class="option" data-score="0" onclick="selectOption(this,5)">I navigate politics, personalities, and trust - AI can't read a room</div>
+                        <div class="option" data-score="0" onclick="selectOption(this,5)">I make high-stakes calls with incomplete information under pressure</div>
+                        <div class="option" data-score="0" onclick="selectOption(this,5)">I create genuinely new things - not remixes of what already exists</div>
+                        <div class="option" data-score="3" onclick="selectOption(this,5)">Honestly? I'm asking myself that more than I'd like</div>
                     </div>
                     <button type="button" class="btn" id="btn5" onclick="calculateScore()" disabled>Get My Score 🎯</button>
                 </div>
