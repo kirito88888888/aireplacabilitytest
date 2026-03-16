@@ -1105,8 +1105,7 @@
         window.userScore       = score;
         window.userResultLabel = r.label;
 
-        // Submit to Google Sheets (fire-and-forget)
-        const name = document.getElementById('nameInput').value.trim();
+        // Submit to Google Sheets (fire-and-forget) — reuses `name` declared above
         submitToSheets(score, r.label, name, questionAnswers);
     }
 
