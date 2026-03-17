@@ -1066,11 +1066,12 @@
     ═══════════════════════════════════════════ */
     const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz-OyyXOBYTMk-7mJLUlzi4cM-Eg-P0y0TA5YtvJm4a1AdFOJk4PpQBHxtt7H3T3QyP/exec';
 
-    async function submitToSheets(score, resultLabel, name, answers) {
+    async function submitToSheets(score, resultLabel, name, answers, jobTitle) {
         if (!GOOGLE_SHEETS_URL || GOOGLE_SHEETS_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
         const payload = {
             timestamp: new Date().toISOString(),
             name:      name || '(anonymous)',
+            job_title: jobTitle || '',
             score:     score,
             result:    resultLabel,
             q1: answers[1] || '',
@@ -1214,7 +1215,7 @@
         document.fonts.ready.then(() => drawScoreCard(score, r, name, q5Answer, jobTitle));
 
         // Submit to Google Sheets (fire-and-forget)
-        submitToSheets(score, r.label, name, questionAnswers);
+        submitToSheets(score, r.label, name, questionAnswers, jobTitle);
     }
 
     function drawScoreCard(score, r, name, q5Answer, jobTitle) {
