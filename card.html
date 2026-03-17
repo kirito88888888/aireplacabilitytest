@@ -131,6 +131,11 @@
         return new URLSearchParams(window.location.search).get(name) || '';
     }
 
+    // Pre-load OC logo
+    var _ocLogoImg = new Image();
+    _ocLogoImg.crossOrigin = 'anonymous';
+    _ocLogoImg.src = 'logo.png';
+
     var score    = parseInt(getParam('score'), 10) || 0;
     var tierSlug = getParam('tier');
     var name     = getParam('name');
@@ -288,6 +293,18 @@
         ctx.closePath();
         ctx.stroke();
         ctx.restore();
+
+        // ── Open Campus logo — top-left corner ──
+        (function paintOCLogo(imgEl, ctxRef) {
+            function draw() {
+                if (!imgEl.naturalWidth) return;
+                var lH = 26;
+                var lW = Math.round(imgEl.naturalWidth * (lH / imgEl.naturalHeight));
+                ctxRef.drawImage(imgEl, 14, 12, lW, lH);
+            }
+            if (imgEl.complete) draw();
+            else imgEl.addEventListener('load', draw, { once: true });
+        })(_ocLogoImg, ctx);
 
         // Show canvas, hide loading
         document.getElementById('loading').style.display = 'none';

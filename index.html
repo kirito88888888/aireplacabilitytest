@@ -941,7 +941,7 @@
                     <div class="cta-eyebrow">Ready to future-proof your career?</div>
                     <div class="cta-headline">Build AI skills that keep you irreplaceable</div>
                     <div class="cta-subtext">Explore AI agents, tools, and courses designed for professionals who want to stay ahead - not get left behind.</div>
-                    <a href="https://agents.opencampus.xyz" target="_blank" rel="noopener" class="cta-btn">
+                    <a href="https://agents.opencampus.xyz/?utm_source=quiz&utm_medium=referral&utm_campaign=quiz" target="_blank" rel="noopener" class="cta-btn">
                         Explore Open Campus Agents
                         <span class="cta-btn-arrow">→</span>
                     </a>
@@ -1116,6 +1116,11 @@
     }
 
     let _pendingScore = null;
+
+    // Pre-load OC logo so it's ready when the canvas is drawn
+    const _ocLogoImg = new Image();
+    _ocLogoImg.crossOrigin = 'anonymous';
+    _ocLogoImg.src = 'logo.png';
 
     function showNameStep() {
         if (questionScores[5] === undefined) return;
@@ -1372,6 +1377,19 @@
         ctx.closePath();
         ctx.stroke();
         ctx.restore();
+
+        // ── Open Campus logo — top-left corner ──
+        // Captured in closure so the async load path can still paint onto this ctx.
+        (function paintOCLogo(imgEl, ctxRef) {
+            function draw() {
+                if (!imgEl.naturalWidth) return;
+                const lH = 26;
+                const lW = Math.round(imgEl.naturalWidth * (lH / imgEl.naturalHeight));
+                ctxRef.drawImage(imgEl, 14, 12, lW, lH);
+            }
+            if (imgEl.complete) draw();
+            else imgEl.addEventListener('load', draw, { once: true });
+        })(_ocLogoImg, ctx);
     }
 
     function downloadCard() {
@@ -1423,8 +1441,31 @@
         const cardUrl   = getCardUrl();
         const tweetText = `I just took the AI Replaceability Test and scored ${score}% replaceable. ${label}. Are you next? 👇 ${cardUrl}`;
 
+        // Attempt Web Share API with the canvas image attached (works on iOS + Android).
+        // This opens the native OS share sheet — user picks X/Twitter from there.
+        const scoreCanvas = document.getElementById('scoreCanvas');
+        if (scoreCanvas && typeof navigator.canShare === 'function') {
+            try {
+                const blob = await new Promise((res, rej) =>
+                    scoreCanvas.toBlob(b => b ? res(b) : rej(new Error('toBlob failed')), 'image/png')
+                );
+                const file = new File([blob], 'my-ai-replaceability-score.png', { type: 'image/png' });
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files: [file], text: tweetText });
+                    return; // success — native share sheet handled it
+                }
+            } catch (e) {
+                if (e.name === 'AbortError') return; // user cancelled — do nothing
+                // Otherwise fall through to tweet-intent fallback
+            }
+        }
+
+        // Fallback: open a pre-drafted tweet and prompt the user to attach the image.
+        // (Twitter web intent does not support direct image attachment from the browser.)
+        const fallbackText = tweetText +
+            '\n\n💡 Tip: download your score card above and attach it to this tweet!';
         window.open(
-            `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`,
+            `https://twitter.com/intent/tweet?text=${encodeURIComponent(fallbackText)}`,
             '_blank'
         );
     }
